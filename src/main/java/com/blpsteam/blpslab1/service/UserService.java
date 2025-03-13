@@ -1,0 +1,88 @@
+package com.blpsteam.blpslab1.service;
+
+
+import com.blpsteam.blpslab1.data.entities.User;
+import com.blpsteam.blpslab1.data.enums.Role;
+import com.blpsteam.blpslab1.exceptions.AdminAlreadyExistsException;
+import com.blpsteam.blpslab1.exceptions.UsernameAlreadyExistsException;
+import com.blpsteam.blpslab1.repositories.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+
+@Service
+public class UserService {
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+//    public User registerUser(String username, String password, Role role){
+//
+//        if (role==Role.ADMIN && userRepository.existsByRole(Role.ADMIN)){
+//            throw new IllegalStateException("Admin user already exists");
+//        }
+//
+//        if (userRepository.findByUsername(username).isPresent()){
+//            throw new IllegalStateException("Username already exists");
+//
+//        }
+//
+//        User user=new User();
+//        user.setUsername(username);
+//        user.setPassword(passwordEncoder.encode(password));
+//        user.setRole(role);
+//        return userRepository.save(user);
+//    }
+
+
+    public User registerUser(String username, String password, Role role) {
+
+        if (username == null || username.isBlank()) {
+            throw new IllegalArgumentException("Username cannot be empty");
+        }
+
+        if (password == null || password.isBlank()) {
+            throw new IllegalArgumentException("Password cannot be empty");
+        }
+
+
+        if (role == Role.ADMIN && userRepository.existsByRole(Role.ADMIN)) {
+            throw new AdminAlreadyExistsException("Admin user already exists");
+        }
+
+        if (userRepository.findByUsername(username).isPresent()) {
+            throw new UsernameAlreadyExistsException("Username already exists");
+        }
+
+
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setRole(role);
+        return userRepository.save(user);
+    }
+
+
+
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+
+    public boolean checkCredentials(String username, String password) {
+        return findByUsername(username)
+                .map(user -> passwordEncoder.matches(password, user.getPassword()))
+                .orElse(false);
+    }
+
+
+
+
+
+
+}
