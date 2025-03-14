@@ -21,23 +21,6 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-//    public User registerUser(String username, String password, Role role){
-//
-//        if (role==Role.ADMIN && userRepository.existsByRole(Role.ADMIN)){
-//            throw new IllegalStateException("Admin user already exists");
-//        }
-//
-//        if (userRepository.findByUsername(username).isPresent()){
-//            throw new IllegalStateException("Username already exists");
-//
-//        }
-//
-//        User user=new User();
-//        user.setUsername(username);
-//        user.setPassword(passwordEncoder.encode(password));
-//        user.setRole(role);
-//        return userRepository.save(user);
-//    }
 
 
     public User registerUser(String username, String password, Role role) {

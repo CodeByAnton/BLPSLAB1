@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleUsernameAlreadyExistsException(UsernameAlreadyExistsException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: This username is already taken.");
     }
-
+    //обработчик некоректных значений в dto, обычно пустые поля
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
