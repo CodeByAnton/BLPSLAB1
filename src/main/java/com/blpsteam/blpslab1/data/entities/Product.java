@@ -18,6 +18,9 @@ public class Product {
     private Long id;
 
     @Column(nullable = false)
+    private String brand;
+
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
@@ -27,9 +30,9 @@ public class Product {
     private Integer quantity;
 
     @Column(nullable = false)
+    private Long price;
+
+    @Column(nullable = false)
     private Boolean approved;
 
-    @ManyToOne
-    @JoinColumn(name = "seller_id", nullable = false)
-    private User seller;
 }
