@@ -1,11 +1,11 @@
-package com.blpsteam.blpslab1.service;
+package com.blpsteam.blpslab1.service.impl;
 
 import com.blpsteam.blpslab1.data.entities.Category;
 import com.blpsteam.blpslab1.dto.CategoryRequestDTO;
 import com.blpsteam.blpslab1.dto.CategoryResponseDTO;
 import com.blpsteam.blpslab1.exceptions.impl.CategoryAbsenceException;
 import com.blpsteam.blpslab1.repositories.CategoryRepository;
-import com.blpsteam.blpslab1.repositories.ProductRepository;
+import com.blpsteam.blpslab1.service.CategoryService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

@@ -5,7 +5,6 @@ import com.blpsteam.blpslab1.data.entities.User;
 import com.blpsteam.blpslab1.dto.UserRequestDto;
 import com.blpsteam.blpslab1.service.UserService;
 import com.blpsteam.blpslab1.service.JwtService;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

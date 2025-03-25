@@ -5,7 +5,6 @@ import com.blpsteam.blpslab1.data.entities.Product;
 import com.blpsteam.blpslab1.data.entities.User;
 import com.blpsteam.blpslab1.dto.ProductDTO;
 import com.blpsteam.blpslab1.service.SellerService;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

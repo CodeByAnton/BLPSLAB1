@@ -52,6 +52,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     //Always approved, only for admin usage
+    //TODO
     @Override
     @Transactional
     public ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO) {
@@ -62,6 +63,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     //Always approved, only for admin usage
+    //TODO
     @Override
     @Transactional
     public ProductResponseDTO updateProduct(Long id, ProductRequestDTO productRequestDTO) {
