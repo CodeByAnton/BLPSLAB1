@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 public interface ProductService {
     ProductResponseDTO getProductById(Long id);
     Page<ProductResponseDTO> getAllProducts(Pageable pageable);
+    Page<ProductResponseDTO> getApprovedProducts(Pageable pageable);
     ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO);
     ProductResponseDTO updateProduct(Long id, ProductRequestDTO productRequestDTO);
     void deleteProductById(Long id);

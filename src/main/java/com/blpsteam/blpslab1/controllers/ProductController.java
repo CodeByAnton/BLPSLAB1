@@ -26,8 +26,14 @@ public class ProductController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<ProductResponseDTO> getAllProducts(Pageable pageable) {
         return productService.getAllProducts(pageable);
+    }
+
+    @GetMapping("/catalog")
+    public Page<ProductResponseDTO> getCatalog(Pageable pageable) {
+        return productService.getApprovedProducts(pageable);
     }
 
     @PostMapping

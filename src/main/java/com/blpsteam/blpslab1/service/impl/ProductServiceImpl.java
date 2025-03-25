@@ -46,6 +46,11 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findAll(pageable).map(this::getProductResponseDTOFromEntity);
     }
 
+    @Override
+    public Page<ProductResponseDTO> getApprovedProducts(Pageable pageable) {
+        return productRepository.findByApproved(true, pageable).map(this::getProductResponseDTOFromEntity);
+    }
+
     //Always approved, only for admin usage
     @Override
     @Transactional
