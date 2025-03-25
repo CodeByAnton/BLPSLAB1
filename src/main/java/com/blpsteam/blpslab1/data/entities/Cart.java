@@ -28,4 +28,24 @@ public class Cart {
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public void addItem(CartItem item) {
+        this.items.add(item);
+        item.setCart(this);
+        updateTotalPrice();
+    }
+
+    public void removeItem(CartItem item) {
+        this.items.remove(item);
+        item.setCart(null);
+        updateTotalPrice();
+    }
+
+    private void updateTotalPrice() {
+        long total = 0;
+        for (CartItem item : items) {
+            total += (long) item.getUnitPrice() * item.getQuantity();
+        }
+        this.totalPrice = total;
+    }
 }
