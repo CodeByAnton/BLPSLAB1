@@ -25,10 +25,12 @@ public class CartItem {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "cart_id")
+    @Column(nullable = false)
     private Cart cart;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
+    @Column(nullable = false)
     private Product product;
 
 }
