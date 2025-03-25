@@ -4,5 +4,5 @@ import java.util.List;
 
 public record ProductResponseDTO(Long id, String brand, String name,
                                  String description, int quantity,
-                                 int price, List<Long> categoryIds) {
+                                 Long price, List<Long> categoryIds) {
 }

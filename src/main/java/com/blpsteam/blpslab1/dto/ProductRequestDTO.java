@@ -4,5 +4,6 @@ import java.util.List;
 
 public record ProductRequestDTO(String brand, String name,
                                 String description, int quantity,
-                                int price, List<Long> categoryIds) {
+                                Long price, List<Long> categoryIds,
+                                Long sellerId) {
 }
