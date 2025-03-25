@@ -35,4 +35,11 @@ public class Product {
     @Column(nullable = false)
     private Boolean approved;
 
+    @OneToOne
+    @JoinColumn(name = "seller_id")
+    private User seller;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Category category;
+
 }

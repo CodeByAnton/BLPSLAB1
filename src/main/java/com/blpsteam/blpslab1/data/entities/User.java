@@ -18,7 +18,6 @@ import java.util.Collection;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +32,9 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    @OneToOne(mappedBy = "seller")
+    private Product product;
 
 
     @Override
