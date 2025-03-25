@@ -1,4 +1,4 @@
-package com.blpsteam.blpslab1.service;
+package com.blpsteam.blpslab1.service.impl;
 
 import com.blpsteam.blpslab1.data.entities.Product;
 import com.blpsteam.blpslab1.dto.ProductDTO;

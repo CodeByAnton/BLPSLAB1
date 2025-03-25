@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table(name = "products")
 @Getter
@@ -39,7 +41,12 @@ public class Product {
     @JoinColumn(name = "seller_id")
     private User seller;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    private Category category;
+    @ManyToMany
+    @JoinTable(
+            name = "product_category",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private List<Category> categories;
 
 }

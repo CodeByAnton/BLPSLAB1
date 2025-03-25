@@ -1,10 +1,8 @@
-package com.blpsteam.blpslab1.service;
+package com.blpsteam.blpslab1.service.impl;
 
 import com.blpsteam.blpslab1.data.entities.Product;
 import com.blpsteam.blpslab1.data.entities.User;
-import com.blpsteam.blpslab1.dto.ProductDTO;
 import com.blpsteam.blpslab1.repositories.ProductRepository;
-import org.hibernate.cache.spi.support.AbstractReadWriteAccess;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
