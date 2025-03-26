@@ -1,9 +1,8 @@
 package com.blpsteam.blpslab1.controllers;
 
 import com.blpsteam.blpslab1.data.entities.Cart;
-import com.blpsteam.blpslab1.dto.CartRequestDTO;
 import com.blpsteam.blpslab1.dto.CartResponseDTO;
-import com.blpsteam.blpslab1.service.CartServiceImpl;
+import com.blpsteam.blpslab1.service.impl.CartServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,20 +17,20 @@ public class CartController {
     }
 
     @GetMapping
-    public ResponseEntity<CartResponseDTO> getCart(@RequestBody CartRequestDTO cartRequestDTO) {
-        Cart cart = cartService.getCart(cartRequestDTO.userId());
+    public ResponseEntity<CartResponseDTO> getCart() {
+        Cart cart = cartService.getCart();
         return ResponseEntity.ok(new CartResponseDTO(cart.getId(), cart.getUser().getUsername()));
     }
 
     @DeleteMapping
-    public ResponseEntity<CartResponseDTO> clearCart(@RequestBody CartRequestDTO cartRequestDTO) {
-        Cart cart = cartService.getCart(cartRequestDTO.userId());
-        return ResponseEntity.ok(new CartResponseDTO(cart.getId(), cartService.clearCart(cartRequestDTO.userId())));
+    public ResponseEntity<CartResponseDTO> clearCart() {
+        Cart cart = cartService.getCart();
+        return ResponseEntity.ok(new CartResponseDTO(cart.getId(), cartService.clearCart()));
     }
 
     @PostMapping
-    public ResponseEntity<CartResponseDTO> createCart(@RequestBody CartRequestDTO cartRequestDTO) {
-        Cart cart = cartService.createCart(cartRequestDTO.userId());
+    public ResponseEntity<CartResponseDTO> createCart() {
+        Cart cart = cartService.createCart();
         return ResponseEntity.ok(new CartResponseDTO(cart.getId(), cart));
     }
 
