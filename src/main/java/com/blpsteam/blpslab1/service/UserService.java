@@ -5,8 +5,11 @@ import com.blpsteam.blpslab1.data.entities.User;
 import com.blpsteam.blpslab1.data.enums.Role;
 import com.blpsteam.blpslab1.exceptions.AdminAlreadyExistsException;
 import com.blpsteam.blpslab1.exceptions.UsernameAlreadyExistsException;
+import com.blpsteam.blpslab1.exceptions.impl.UserAbsenceException;
 import com.blpsteam.blpslab1.repositories.UserRepository;
 
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -73,9 +76,15 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
+    public Long getUserIdFromContext() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+        if (principal instanceof UserDetails userDetails) {
+            return userRepository.findByUsername(userDetails.getUsername())
+                    .map(User::getId)
+                    .orElseThrow(() -> new UserAbsenceException("Такого пользователя не существует"));
+        }
 
-
-
-
+        throw new UserAbsenceException("Такого пользователя не существует");
+    }
 }
