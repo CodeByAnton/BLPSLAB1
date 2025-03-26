@@ -37,8 +37,8 @@ public class Product {
     @Column(nullable = false)
     private Boolean approved;
 
-    @OneToOne
-    @JoinColumn(name = "seller_id")
+    @ManyToOne
+    @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
 
     @ManyToMany
