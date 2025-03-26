@@ -5,6 +5,7 @@ import com.blpsteam.blpslab1.data.entities.CartItem;
 import com.blpsteam.blpslab1.data.entities.Product;
 import com.blpsteam.blpslab1.dto.CartItemRequestDTO;
 import com.blpsteam.blpslab1.dto.CartItemResponseDTO;
+import com.blpsteam.blpslab1.exceptions.CartItemQuantityException;
 import com.blpsteam.blpslab1.exceptions.impl.CartAbsenceException;
 import com.blpsteam.blpslab1.exceptions.impl.ProductAbsenceException;
 import com.blpsteam.blpslab1.repositories.CartItemRepository;
@@ -46,8 +47,15 @@ public class CartItemServiceImpl implements CartItemService {
     @Transactional
     public CartItemResponseDTO createCartItem(CartItemRequestDTO cartItemRequestDTO) {
         CartItem cartItem = getCartItemFromDTO(cartItemRequestDTO);
-        cartItem = cartItemRepository.save(cartItem);
-        return getCartItemResponseDTOFromEntity(cartItem);
+        Product product = cartItem.getProduct();
+        int newQuantity = product.getQuantity() - cartItem.getQuantity();
+        if (newQuantity >= 0) {
+            product.setQuantity(newQuantity);
+            productRepository.save(product);
+            cartItem = cartItemRepository.save(cartItem);
+            return getCartItemResponseDTOFromEntity(cartItem);
+        }
+        throw new CartItemQuantityException("Недостаточно товара");
     }
 
     @Override
@@ -60,12 +68,18 @@ public class CartItemServiceImpl implements CartItemService {
         int totalPrice = unitPrice * cartItemRequestDTO.quantity();
 
         cartItem.setQuantity(cartItemRequestDTO.quantity());
-        cartItem.setUnitPrice(unitPrice);
-        cartItem.setTotalPrice(totalPrice);
+        Product product = cartItem.getProduct();
+        int newQuantity = product.getQuantity() - cartItem.getQuantity();
+        if (newQuantity >= 0) {
+            product.setQuantity(newQuantity);
+            cartItem.setUnitPrice(unitPrice);
+            cartItem.setTotalPrice(totalPrice);
 
-        cartItemRepository.save(cartItem);
+            cartItemRepository.save(cartItem);
 
-        return getCartItemResponseDTOFromEntity(cartItem);
+            return getCartItemResponseDTOFromEntity(cartItem);
+        }
+        throw new CartItemQuantityException("Недостаточно товара");
     }
 
     @Override
@@ -73,7 +87,10 @@ public class CartItemServiceImpl implements CartItemService {
     public void deleteCartItemById(Long id) {
         CartItem cartItem = cartItemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("CartItem с данным id не существует"));
-
+        Product product = cartItem.getProduct();
+        int quantity = product.getQuantity();
+        product.setQuantity(quantity+cartItem.getQuantity());
+        productRepository.save(product);
         cartItemRepository.delete(cartItem);
     }
 
