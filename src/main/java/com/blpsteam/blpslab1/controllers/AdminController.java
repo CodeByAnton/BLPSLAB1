@@ -30,7 +30,7 @@ public class AdminController {
     @PutMapping("/approve")
     public ResponseEntity<String> approveProduct(@RequestBody ProductNameDTO productNameDTO) {
         System.out.println(productNameDTO);
-        boolean updated = adminService.approveProduct(productNameDTO.getName());
+        boolean updated = adminService.approveProduct(productNameDTO.name());
         if (updated) {
             return ResponseEntity.ok("Product approved successfully");
         } else {

@@ -37,7 +37,9 @@ public class SellerController {
     public ResponseEntity<?> addItem(@RequestBody ProductDTO productDTO,
                                      @AuthenticationPrincipal User seller) {
 
-            Product product= sellerService.addProduct(productDTO.getName(),productDTO.getDescription(),productDTO.getQuantity(), seller);
+
+
+            Product product= sellerService.addProduct(productDTO.name(),productDTO.description(),productDTO.quantity(), seller);
             return ResponseEntity.status(HttpStatus.CREATED).body(String.format("Item %s added successfully", product.getName()));
 
 

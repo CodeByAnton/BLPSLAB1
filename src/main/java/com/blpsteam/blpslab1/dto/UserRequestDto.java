@@ -4,12 +4,6 @@ import com.blpsteam.blpslab1.data.enums.Role;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class UserRequestDto {
-    private String username;
-    private String password;
-    private Role role;
+
+public record UserRequestDto(String username, String password, Role role) {
 }

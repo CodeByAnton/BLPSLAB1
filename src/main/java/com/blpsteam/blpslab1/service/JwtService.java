@@ -1,6 +1,7 @@
 package com.blpsteam.blpslab1.service;
 
 import com.blpsteam.blpslab1.data.entities.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +27,17 @@ public class JwtService {
                 .setExpiration(new Date(System.currentTimeMillis()+lifetime))
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
+    }
+
+    public String extractUsername(String token) {
+        return getClaims(token).getSubject();  // Возвращаем subject, который содержит имя пользователя
+    }
+
+    private Claims getClaims(String token) {
+        return Jwts.parser()
+                .setSigningKey(secret)
+                .parseClaimsJws(token)
+                .getBody();
     }
 
 }

@@ -6,6 +6,7 @@ import com.blpsteam.blpslab1.data.enums.Role;
 import com.blpsteam.blpslab1.exceptions.AdminAlreadyExistsException;
 import com.blpsteam.blpslab1.exceptions.UsernameAlreadyExistsException;
 import com.blpsteam.blpslab1.repositories.UserRepository;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +16,12 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
 
@@ -61,6 +64,13 @@ public class UserService {
         return findByUsername(username)
                 .map(user -> passwordEncoder.matches(password, user.getPassword()))
                 .orElse(false);
+    }
+
+    public Long getUserIdFromToken(String token) {
+        String username = jwtService.extractUsername(token);
+        return userRepository.findByUsername(username)
+                .map(User::getId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
 
