@@ -11,6 +11,7 @@ import com.blpsteam.blpslab1.repositories.CategoryRepository;
 import com.blpsteam.blpslab1.repositories.ProductRepository;
 import com.blpsteam.blpslab1.repositories.UserRepository;
 import com.blpsteam.blpslab1.service.ProductService;
+import com.blpsteam.blpslab1.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,11 +28,13 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
-    public ProductServiceImpl(ProductRepository productRepository, CategoryRepository categoryRepository, UserRepository userRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, CategoryRepository categoryRepository, UserRepository userRepository, UserService userService) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -51,19 +54,14 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findByApproved(true, pageable).map(this::getProductResponseDTOFromEntity);
     }
 
-    //Always approved, only for admin usage
-    //TODO
     @Override
     @Transactional
     public ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO) {
         Product product = getProductFromDTO(productRequestDTO);
-        product.setApproved(true);
         Product newProduct = productRepository.save(product);
         return getProductResponseDTOFromEntity(newProduct);
     }
 
-    //Always approved, only for admin usage
-    //TODO
     @Override
     @Transactional
     public ProductResponseDTO updateProduct(Long id, ProductRequestDTO productRequestDTO) {
@@ -75,7 +73,7 @@ public class ProductServiceImpl implements ProductService {
         existingProduct.setDescription(productRequestDTO.description());
         existingProduct.setQuantity(productRequestDTO.quantity());
         existingProduct.setPrice(productRequestDTO.price());
-        existingProduct.setApproved(true);
+        existingProduct.setApproved(productRequestDTO.approved());
         if (!productRequestDTO.categoryIds().isEmpty()) {
             List<Category> categories = new ArrayList<>();
 
@@ -91,7 +89,6 @@ public class ProductServiceImpl implements ProductService {
         return getProductResponseDTOFromEntity(updatedProduct);
     }
 
-    //Always delete, only for admin usage
     @Override
     @Transactional
     public void deleteProductById(Long id) {
@@ -108,11 +105,10 @@ public class ProductServiceImpl implements ProductService {
         product.setDescription(productRequestDTO.description());
         product.setQuantity(productRequestDTO.quantity());
         product.setPrice(productRequestDTO.price());
-        product.setApproved(false);
-        product.setSeller(userRepository.findById(productRequestDTO.sellerId())
+        product.setApproved(productRequestDTO.approved());
+        product.setSeller(userRepository.findById(userService.getUserIdFromContext())
                 .orElseThrow(() -> new UserAbsenceException("Нет такого пользователя"))
-        );//TODO
-
+        );
 
         if (!productRequestDTO.categoryIds().isEmpty()) {
             List<Category> categories = new ArrayList<>();
