@@ -87,4 +87,16 @@ public class UserService {
 
         throw new UserAbsenceException("Такого пользователя не существует");
     }
+
+    public Role getUserRoleFromContext() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal instanceof UserDetails userDetails) {
+            return userRepository.findByUsername(userDetails.getUsername())
+                    .map(User::getRole)
+                    .orElseThrow(() -> new UserAbsenceException("Такого пользователя не существует"));
+        }
+
+        throw new UserAbsenceException("Такого пользователя не существует");
+    }
 }
