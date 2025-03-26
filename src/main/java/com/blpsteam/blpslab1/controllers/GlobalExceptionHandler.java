@@ -1,9 +1,7 @@
 package com.blpsteam.blpslab1.controllers;
 
-import com.blpsteam.blpslab1.exceptions.AdminAlreadyExistsException;
-import com.blpsteam.blpslab1.exceptions.InvalidCredentialsException;
-import com.blpsteam.blpslab1.exceptions.UsernameAlreadyExistsException;
-import com.blpsteam.blpslab1.exceptions.UsernameNotFoundException;
+import com.blpsteam.blpslab1.dto.ExceptionResponseDTO;
+import com.blpsteam.blpslab1.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -47,4 +45,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleUsernameNotFoundException(UsernameNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
+
+    @ExceptionHandler({
+            EntityAbsenceException.class,
+    })
+    public ResponseEntity<ExceptionResponseDTO> handleEntityAbsenceException(RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ExceptionResponseDTO(e.getMessage()));
+    }
+
 }
