@@ -3,19 +3,25 @@ package com.blpsteam.blpslab1.service.impl;
 import com.blpsteam.blpslab1.data.entities.Cart;
 import com.blpsteam.blpslab1.data.entities.CartItem;
 import com.blpsteam.blpslab1.data.entities.Product;
+import com.blpsteam.blpslab1.data.entities.User;
 import com.blpsteam.blpslab1.dto.CartItemRequestDTO;
 import com.blpsteam.blpslab1.dto.CartItemResponseDTO;
 import com.blpsteam.blpslab1.exceptions.CartItemQuantityException;
 import com.blpsteam.blpslab1.exceptions.impl.CartAbsenceException;
 import com.blpsteam.blpslab1.exceptions.impl.ProductAbsenceException;
+import com.blpsteam.blpslab1.exceptions.impl.UserAbsenceException;
 import com.blpsteam.blpslab1.repositories.CartItemRepository;
 import com.blpsteam.blpslab1.repositories.CartRepository;
 import com.blpsteam.blpslab1.repositories.ProductRepository;
+import com.blpsteam.blpslab1.repositories.UserRepository;
 import com.blpsteam.blpslab1.service.CartItemService;
+import com.blpsteam.blpslab1.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class CartItemServiceImpl implements CartItemService {
@@ -23,11 +29,15 @@ public class CartItemServiceImpl implements CartItemService {
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
     private final CartRepository cartRepository;
+    private final UserService userService;
+    private final UserRepository userRepository;
 
-    public CartItemServiceImpl(CartItemRepository cartItemRepository, ProductRepository productRepository, CartRepository cartRepository) {
+    public CartItemServiceImpl(CartItemRepository cartItemRepository, ProductRepository productRepository, CartRepository cartRepository, UserService userService, UserRepository userRepository) {
         this.cartItemRepository = cartItemRepository;
         this.productRepository = productRepository;
         this.cartRepository = cartRepository;
+        this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -46,6 +56,12 @@ public class CartItemServiceImpl implements CartItemService {
     @Override
     @Transactional
     public CartItemResponseDTO createCartItem(CartItemRequestDTO cartItemRequestDTO) {
+        if (cartRepository.findByUserId(userService.getUserIdFromContext()).isEmpty()) {
+            Cart cart = new Cart();
+            User user = userRepository.findById(userService.getUserIdFromContext())
+                    .orElseThrow(() -> new UserAbsenceException("Такого пользователя не существует"));
+            cart.setUser(user);
+        }
         CartItem cartItem = getCartItemFromDTO(cartItemRequestDTO);
         Product product = cartItem.getProduct();
         int newQuantity = product.getQuantity() - cartItem.getQuantity();
@@ -94,6 +110,21 @@ public class CartItemServiceImpl implements CartItemService {
         cartItemRepository.delete(cartItem);
     }
 
+    @Override
+    @Transactional
+    public void clearCartAndUpdateProductQuantities(Long cartId) {
+        List<CartItem> cartItems = cartItemRepository.findByCartId(cartId);
+
+
+        for (CartItem cartItem : cartItems) {
+            Product product = cartItem.getProduct();
+            int quantity = product.getQuantity();
+            product.setQuantity(quantity + cartItem.getQuantity());
+            productRepository.save(product);
+        }
+
+        cartItemRepository.deleteAll(cartItems);
+    }
 
     private CartItem getCartItemFromDTO(CartItemRequestDTO cartItemRequestDTO) {
         CartItem cartItem = new CartItem();
