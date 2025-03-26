@@ -2,7 +2,7 @@ package com.blpsteam.blpslab1.controllers;
 
 
 import com.blpsteam.blpslab1.data.entities.User;
-import com.blpsteam.blpslab1.dto.UserRequestDto;
+import com.blpsteam.blpslab1.dto.UserRequestDTO;
 import com.blpsteam.blpslab1.service.UserService;
 import com.blpsteam.blpslab1.service.JwtService;
 import org.springframework.http.HttpStatus;
@@ -25,14 +25,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register( @RequestBody UserRequestDto userRequestDto) {
+    public ResponseEntity<?> register( @RequestBody UserRequestDTO userRequestDto) {
         User user = userService.registerUser(userRequestDto.username(), userRequestDto.password(), userRequestDto.role());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(String.format("User %s registered successfully", user.getUsername()));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserRequestDto userRequestDto) {
+    public ResponseEntity<?> login(@RequestBody UserRequestDTO userRequestDto) {
         if (!userService.checkCredentials(userRequestDto.username(), userRequestDto.password())) {
             throw new InvalidCredentialsException("Wrong username or password");
         }
