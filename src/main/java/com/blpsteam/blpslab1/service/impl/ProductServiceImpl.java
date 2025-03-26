@@ -75,14 +75,14 @@ public class ProductServiceImpl implements ProductService {
         existingProduct.setPrice(productRequestDTO.price());
         existingProduct.setApproved(productRequestDTO.approved());
         if (!productRequestDTO.categoryIds().isEmpty()) {
-            List<Category> categories = new ArrayList<>();
+            existingProduct.getCategories().clear();
 
+            List<Category> categories = new ArrayList<>();
             for (Long categoryId : productRequestDTO.categoryIds()) {
                 Category category = categoryRepository.findById(categoryId)
                         .orElseThrow(() -> new CategoryAbsenceException("Категория с ID " + categoryId + " не найдена"));
                 categories.add(category);
             }
-
             existingProduct.setCategories(categories);
         }
         Product updatedProduct = productRepository.save(existingProduct);
@@ -92,10 +92,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public void deleteProductById(Long id) {
-        productRepository.findById(id)
-                .ifPresentOrElse(productRepository::delete, () -> {
-                    throw new ProductAbsenceException("Product с данным id не существует");
-                });
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ProductAbsenceException("Product с данным id не существует"));
+
+        product.getCategories().clear();
+
+        productRepository.delete(product);
     }
 
     private Product getProductFromDTO(ProductRequestDTO productRequestDTO) {
