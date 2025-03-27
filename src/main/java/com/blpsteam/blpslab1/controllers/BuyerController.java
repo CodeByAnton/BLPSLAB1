@@ -23,5 +23,6 @@ public class BuyerController {
     public Page<ProductResponseDTO> getCatalog(@RequestParam(required = false) String name,
                                                Pageable pageable) {
         return productService.getApprovedProducts(name,pageable);
+
     }
 }
