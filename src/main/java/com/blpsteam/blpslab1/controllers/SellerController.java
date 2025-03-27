@@ -3,8 +3,9 @@ package com.blpsteam.blpslab1.controllers;
 
 import com.blpsteam.blpslab1.data.entities.Product;
 import com.blpsteam.blpslab1.data.entities.User;
-import com.blpsteam.blpslab1.dto.ProductDTO;
-import com.blpsteam.blpslab1.service.SellerService;
+
+import com.blpsteam.blpslab1.dto.ProductRequestDTO;
+import com.blpsteam.blpslab1.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,10 +21,10 @@ public class SellerController {
 
 
 
-    private final SellerService sellerService;
+    private final ProductService productService;
 
-    public SellerController(SellerService sellerService) {
-        this.sellerService = sellerService;
+    public SellerController(ProductService productService) {
+        this.productService = productService;
     }
     /**
      * Принимает имя товара, описание и количество, если дважды подать товар с одинм и тем же описанием и названием
@@ -34,12 +35,12 @@ public class SellerController {
 
     @PreAuthorize("hasRole('SELLER')")
     @PostMapping("/addproduct")
-    public ResponseEntity<?> addItem(@RequestBody ProductDTO productDTO,
+    public ResponseEntity<?> addItem(@RequestBody ProductRequestDTO productRequestDTO,
                                      @AuthenticationPrincipal User seller) {
 
 
 
-            Product product= sellerService.addProduct(productDTO.name(),productDTO.description(),productDTO.quantity(), seller);
+            Product product= productService.addProduct(productRequestDTO.brand(), productRequestDTO.name(), productRequestDTO.description(),productRequestDTO.quantity(),productRequestDTO.price(), seller);
             return ResponseEntity.status(HttpStatus.CREATED).body(String.format("Item %s added successfully", product.getName()));
 
 

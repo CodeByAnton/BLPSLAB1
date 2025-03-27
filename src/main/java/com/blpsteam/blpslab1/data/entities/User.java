@@ -37,6 +37,8 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Product> products;
 
+    private int balance;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

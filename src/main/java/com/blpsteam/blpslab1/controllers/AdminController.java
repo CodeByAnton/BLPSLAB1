@@ -1,9 +1,10 @@
 package com.blpsteam.blpslab1.controllers;
 
-import com.blpsteam.blpslab1.dto.ProductDTO;
-import com.blpsteam.blpslab1.dto.ProductNameDTO;
-import com.blpsteam.blpslab1.service.AdminService;
+import com.blpsteam.blpslab1.dto.ProductRequestNameDTO;
+import com.blpsteam.blpslab1.dto.ProductResponseDTO;
+import com.blpsteam.blpslab1.service.ProductService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,24 +14,23 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/admin")
 public class AdminController {
 
-    private final AdminService adminService;
-    public AdminController(AdminService adminService) {
-        this.adminService = adminService;
+    private final ProductService productService;
+    public AdminController(ProductService productService) {
+
+        this.productService = productService;
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/showallproducts")
-    public Page<ProductDTO> getAllProducts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return adminService.getAllProducts(page, size);
+    public Page<ProductResponseDTO> getAllProducts(Pageable pageable) {
+        return productService.getAllProducts(pageable);
     }
 
     // Одобрение товара по названию
     @PutMapping("/approve")
-    public ResponseEntity<String> approveProduct(@RequestBody ProductNameDTO productNameDTO) {
+    public ResponseEntity<String> approveProduct(@RequestBody ProductRequestNameDTO productNameDTO) {
         System.out.println(productNameDTO);
-        boolean updated = adminService.approveProduct(productNameDTO.name());
+        boolean updated = productService.approveProduct(productNameDTO.name());
         if (updated) {
             return ResponseEntity.ok("Product approved successfully");
         } else {

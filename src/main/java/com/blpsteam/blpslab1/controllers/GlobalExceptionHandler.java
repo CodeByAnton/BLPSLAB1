@@ -1,6 +1,5 @@
 package com.blpsteam.blpslab1.controllers;
 
-import com.blpsteam.blpslab1.dto.ExceptionResponseDTO;
 import com.blpsteam.blpslab1.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,13 +44,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleUsernameNotFoundException(UsernameNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
-
-    @ExceptionHandler({
-            EntityAbsenceException.class,
-    })
-    public ResponseEntity<ExceptionResponseDTO> handleEntityAbsenceException(RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ExceptionResponseDTO(e.getMessage()));
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<String> handleProductNotFound(ProductNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
+
+//    @ExceptionHandler({
+//            EntityAbsenceException.class,
+//    })
+//    public ResponseEntity<ExceptionResponseDTO> handleEntityAbsenceException(RuntimeException e) {
+//        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+//                .body(new ExceptionResponseDTO(e.getMessage()));
+//    }
 
 }
