@@ -2,7 +2,6 @@ package com.blpsteam.blpslab1.service;
 
 import com.blpsteam.blpslab1.data.entities.Product;
 import com.blpsteam.blpslab1.data.entities.User;
-import com.blpsteam.blpslab1.dto.ProductRequestDTO;
 import com.blpsteam.blpslab1.dto.ProductResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
