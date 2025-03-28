@@ -48,12 +48,12 @@ public class CartServiceImpl implements CartService {
     public Cart clearCart() {
         System.out.println("Enter clearCard");
         Long userId = userService.getUserIdFromContext();
-        System.out.println("Recive user from context"+userId);
+        System.out.println("Receive user from context"+userId);
         Cart cart = cartRepository.findByUserId(userId).orElseThrow(() -> new CartAbsenceException("Корзина для пользователя с id " + userId + " не найдена"));
-        if (orderRepository.findByCartIdAndStatus(cart.getId(), OrderStatus.UNPAID).isPresent()) {
-
-            throw new RuntimeException("Cart is already used in order");
-        }
+//        if (orderRepository.findByCartIdAndStatus(cart.getId(), OrderStatus.UNPAID).isPresent()) {
+//
+//            throw new RuntimeException("Cart is already used in order");
+//        }
 
         System.out.println("Clearing cart for user with ID: " + userId);
         System.out.println("Cart contains " + cart.getItems().size() + " items.");
@@ -61,7 +61,8 @@ public class CartServiceImpl implements CartService {
         cartItemService.clearCartAndUpdateProductQuantities(cart.getId());
         System.out.println(cart.getItems());
         cart.getItems().clear();
-        cartRepository.save(cart);
+        cartRepository.delete(cart);
+//        cartRepository.save(cart);
 
         return cart;
     }

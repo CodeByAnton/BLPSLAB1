@@ -27,15 +27,16 @@ public class OrderController {
             Order order = orderService.createOrder(buyer.getId()); // Получаем userId из аутентифицированного пользователя
             return ResponseEntity.status(HttpStatus.CREATED).body(new OrderResponseDTO(buyer.getUsername(),order.getTotalPrice()));
         } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
 
     @PreAuthorize("hasRole('BUYER')")
-    @PostMapping("/pay/{orderId}")
-    public ResponseEntity<String> payOrder(@PathVariable Long orderId) {
+    @PostMapping("/pay")
+    public ResponseEntity<String> payOrder(@AuthenticationPrincipal User buyer) {
         try {
-            orderService.payOrder(orderId);
+            orderService.payOrder(buyer);
 
             return new ResponseEntity<>("Payment successful", HttpStatus.OK);
         } catch (RuntimeException e) {

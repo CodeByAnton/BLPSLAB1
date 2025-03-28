@@ -45,7 +45,6 @@ public class OrderServiceImpl implements OrderService {
 
         Order order = new Order();
         order.setUser(user);
-        order.setCart(cart);
         order.setTotalPrice(cart.getTotalPrice());
         order.setStatus(OrderStatus.UNPAID); // Изначально статус "не оплачено"
         order.setCreatedAt(LocalDateTime.now());
@@ -58,8 +57,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void payOrder(Long orderId) {
-        Order order = orderRepository.findById(orderId)
+    public void payOrder(User buyer) {
+        Order order = orderRepository.findByUserAndStatus(buyer, OrderStatus.UNPAID)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
         if (order.getStatus() != OrderStatus.UNPAID) {
@@ -81,7 +80,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
 
         // Очищаем корзину после успешной оплаты
-//        cartService.clearCart();
+        cartService.clearCart();
 
         // Выводим сообщение о успешной оплате
         System.out.println("Payment successful: Order " + order.getId() + " paid. Cart cleared.");
