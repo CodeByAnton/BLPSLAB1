@@ -22,7 +22,7 @@ public class Cart {
 
     private Long totalPrice;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "cart", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true)
     private Set<CartItem> items = new HashSet<>();
 
     @OneToOne
@@ -41,7 +41,7 @@ public class Cart {
         updateTotalPrice();
     }
 
-    private void updateTotalPrice() {
+    public void updateTotalPrice() {
         long total = 0;
         for (CartItem item : items) {
             total += (long) item.getUnitPrice() * item.getQuantity();

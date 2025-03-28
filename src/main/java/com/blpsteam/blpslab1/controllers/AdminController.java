@@ -1,6 +1,6 @@
 package com.blpsteam.blpslab1.controllers;
 
-import com.blpsteam.blpslab1.dto.ProductRequestNameDTO;
+import com.blpsteam.blpslab1.dto.ProductRequestIdDTO;
 import com.blpsteam.blpslab1.dto.ProductResponseDTO;
 import com.blpsteam.blpslab1.service.ProductService;
 import org.springframework.data.domain.Page;
@@ -26,11 +26,11 @@ public class AdminController {
         return productService.getAllProducts(pageable);
     }
 
-    // Одобрение товара по названию
+    // Одобрение товара по id
     @PutMapping("/approve")
-    public ResponseEntity<String> approveProduct(@RequestBody ProductRequestNameDTO productNameDTO) {
-        System.out.println(productNameDTO);
-        boolean updated = productService.approveProduct(productNameDTO.name());
+    public ResponseEntity<String> approveProduct(@RequestBody ProductRequestIdDTO productIdDTO) {
+        System.out.println(productIdDTO);
+        boolean updated = productService.approveProduct(productIdDTO.productId());
         if (updated) {
             return ResponseEntity.ok("Product approved successfully");
         } else {

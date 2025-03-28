@@ -37,7 +37,7 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Product> products;
 
-    private int balance;
+    private Long balance;
 
 
     @Override

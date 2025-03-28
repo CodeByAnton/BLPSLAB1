@@ -40,8 +40,10 @@ public class SellerController {
 
 
 
-            Product product= productService.addProduct(productRequestDTO.brand(), productRequestDTO.name(), productRequestDTO.description(),productRequestDTO.quantity(),productRequestDTO.price(), seller);
-            return ResponseEntity.status(HttpStatus.CREATED).body(String.format("Item %s added successfully", product.getName()));
+
+
+        Product product= productService.addProduct(productRequestDTO.brand(), productRequestDTO.name(), productRequestDTO.description(),productRequestDTO.quantity(),productRequestDTO.price(), seller);
+        return ResponseEntity.status(HttpStatus.CREATED).body(String.format("Item %s added successfully", product.getName()));
 
 
 

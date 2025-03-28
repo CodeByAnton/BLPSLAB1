@@ -4,6 +4,7 @@ import com.blpsteam.blpslab1.data.entities.Cart;
 import com.blpsteam.blpslab1.data.entities.CartItem;
 import com.blpsteam.blpslab1.data.entities.Product;
 import com.blpsteam.blpslab1.data.entities.User;
+import com.blpsteam.blpslab1.dto.CartItemQuantityRequestDTO;
 import com.blpsteam.blpslab1.dto.CartItemRequestDTO;
 import com.blpsteam.blpslab1.dto.CartItemResponseDTO;
 import com.blpsteam.blpslab1.exceptions.CartItemQuantityException;
@@ -17,11 +18,13 @@ import com.blpsteam.blpslab1.repositories.UserRepository;
 import com.blpsteam.blpslab1.service.CartItemService;
 import com.blpsteam.blpslab1.service.UserService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CartItemServiceImpl implements CartItemService {
@@ -43,32 +46,57 @@ public class CartItemServiceImpl implements CartItemService {
     @Override
     public CartItemResponseDTO getCartItemById(Long id) {
         CartItem cartItem = cartItemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("CartItem с данным id не существует"));
+                .orElseThrow(() -> new RuntimeException("CartItem with id " + id + " not found"));
         return getCartItemResponseDTOFromEntity(cartItem);
     }
 
     @Override
     public Page<CartItemResponseDTO> getAllCartItems(Pageable pageable) {
-        return cartItemRepository.findAll(pageable)
-                .map(this::getCartItemResponseDTOFromEntity);
+        Long userId = userService.getUserIdFromContext();
+
+        // Находим корзину пользователя по userId
+        Cart cart = cartRepository.findByUserId(userId).orElseThrow(() ->
+                new CartAbsenceException("Корзина для пользователя с id " + userId + " не найдена"));
+
+        // Получаем все cartItems, которые принадлежат найденной корзине
+        List<CartItem> cartItems = cartItemRepository.findByCartId(cart.getId());
+        return new PageImpl<>(cartItems.stream()
+                .map(this::getCartItemResponseDTOFromEntity)
+                .collect(Collectors.toList()), pageable, cartItems.size());
+//        Long userId = userService.getUserIdFromContext();
+//        Cart cart = cartRepository.findByUserId(userId).orElseThrow(() -> new CartAbsenceException("Корзина для пользователя с id " + userId + " не найдена"));
+//        return cartItemRepository.findAll(pageable)
+//                .map(this::getCartItemResponseDTOFromEntity);
     }
 
     @Override
     @Transactional
     public CartItemResponseDTO createCartItem(CartItemRequestDTO cartItemRequestDTO) {
-        if (cartRepository.findByUserId(userService.getUserIdFromContext()).isEmpty()) {
-            Cart cart = new Cart();
-            User user = userRepository.findById(userService.getUserIdFromContext())
-                    .orElseThrow(() -> new UserAbsenceException("Такого пользователя не существует"));
-            cart.setUser(user);
+        if (cartItemRequestDTO.quantity()<=0){
+            throw new IllegalArgumentException("Change product quantity, because quantity should be greater than 0");
         }
+
+        Cart cart = cartRepository.findByUserId(userService.getUserIdFromContext())
+                .orElseGet(() -> {
+                    Cart newCart = new Cart();
+                    User user = userRepository.findById(userService.getUserIdFromContext())
+                            .orElseThrow(() -> new UserAbsenceException("There is no user with id " + userService.getUserIdFromContext()));
+                    newCart.setUser(user);
+                    return cartRepository.save(newCart);
+                });
         CartItem cartItem = getCartItemFromDTO(cartItemRequestDTO);
         Product product = cartItem.getProduct();
+        System.out.println(product.getId());
+        if (cartItemRepository.findByCartIdAndProductId(cart.getId(), product.getId()).isPresent()) {
+            throw new IllegalArgumentException("CartItem with this product already exists");
+        }
         int newQuantity = product.getQuantity() - cartItem.getQuantity();
         if (newQuantity >= 0) {
             product.setQuantity(newQuantity);
             productRepository.save(product);
             cartItem = cartItemRepository.save(cartItem);
+            cart.addItem(cartItem);
+            cartRepository.save(cart);
             return getCartItemResponseDTOFromEntity(cartItem);
         }
         throw new CartItemQuantityException("Недостаточно товара");
@@ -76,9 +104,13 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     @Transactional
-    public CartItemResponseDTO updateCartItem(Long id, CartItemRequestDTO cartItemRequestDTO) {
+    public CartItemResponseDTO updateCartItem(Long id, CartItemQuantityRequestDTO cartItemRequestDTO) {
         CartItem cartItem = cartItemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("CartItem с данным id не существует"));
+
+        if (cartItem.getQuantity()+cartItemRequestDTO.quantity()<=0){
+            throw new IllegalArgumentException("Change product quantity, because quantity should be greater than 0");
+        }
 
         int unitPrice = cartItem.getProduct().getPrice().intValue();
         int totalPrice = unitPrice * cartItemRequestDTO.quantity();
@@ -87,11 +119,14 @@ public class CartItemServiceImpl implements CartItemService {
         Product product = cartItem.getProduct();
         int newQuantity = product.getQuantity() - cartItem.getQuantity();
         if (newQuantity >= 0) {
+            Cart cart=cartItem.getCart();
             product.setQuantity(newQuantity);
             cartItem.setUnitPrice(unitPrice);
             cartItem.setTotalPrice(totalPrice);
-
             cartItemRepository.save(cartItem);
+
+            cart.updateTotalPrice();
+            cartRepository.save(cart);
 
             return getCartItemResponseDTOFromEntity(cartItem);
         }
@@ -101,13 +136,29 @@ public class CartItemServiceImpl implements CartItemService {
     @Override
     @Transactional
     public void deleteCartItemById(Long id) {
+//        CartItem cartItem = cartItemRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("CartItem с данным id не существует"));
+//        Product product = cartItem.getProduct();
+//        int quantity = product.getQuantity();
+//        product.setQuantity(quantity+cartItem.getQuantity());
+//        productRepository.save(product);
+//        cartItemRepository.delete(cartItem);
+
         CartItem cartItem = cartItemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("CartItem с данным id не существует"));
+
+        Cart cart = cartItem.getCart();
+        cart.removeItem(cartItem);
+
+
         Product product = cartItem.getProduct();
         int quantity = product.getQuantity();
-        product.setQuantity(quantity+cartItem.getQuantity());
-        productRepository.save(product);
-        cartItemRepository.delete(cartItem);
+        product.setQuantity(quantity + cartItem.getQuantity()); // Возвращаем товар в магазин
+        productRepository.save(product); // Сохраняем изменения в продукте
+
+        cartItemRepository.delete(cartItem); // Удаляем cartItem из репозитория
+        cartRepository.save(cart);
+
     }
 
     @Override
@@ -115,15 +166,17 @@ public class CartItemServiceImpl implements CartItemService {
     public void clearCartAndUpdateProductQuantities(Long cartId) {
         List<CartItem> cartItems = cartItemRepository.findByCartId(cartId);
 
-
+        System.out.println(cartItems);
         for (CartItem cartItem : cartItems) {
             Product product = cartItem.getProduct();
             int quantity = product.getQuantity();
             product.setQuantity(quantity + cartItem.getQuantity());
             productRepository.save(product);
         }
-
+        System.out.println("Method clearCartAndUpdateProductQuantities ");
+        System.out.println(cartItems);
         cartItemRepository.deleteAll(cartItems);
+        System.out.println(cartItemRepository.findByCartId(cartId));
     }
 
     private CartItem getCartItemFromDTO(CartItemRequestDTO cartItemRequestDTO) {

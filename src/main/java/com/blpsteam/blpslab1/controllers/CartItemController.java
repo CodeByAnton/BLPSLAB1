@@ -1,5 +1,6 @@
 package com.blpsteam.blpslab1.controllers;
 
+import com.blpsteam.blpslab1.dto.CartItemQuantityRequestDTO;
 import com.blpsteam.blpslab1.dto.CartItemRequestDTO;
 import com.blpsteam.blpslab1.dto.CartItemResponseDTO;
 import com.blpsteam.blpslab1.service.CartItemService;
@@ -10,7 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/cartItems")
+@RequestMapping("/api/v1/buyer/cartItems")
 public class CartItemController {
 
     private final CartItemService cartItemService;
@@ -20,30 +21,32 @@ public class CartItemController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('BUYER')")
     public CartItemResponseDTO getCartItemById(@PathVariable Long id) {
         return cartItemService.getCartItemById(id);
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('BUYER')")
     public Page<CartItemResponseDTO> getAllCartItems(Pageable pageable) {
         return cartItemService.getAllCartItems(pageable);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('BUYER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('BUYER')")
     public CartItemResponseDTO createCartItem(@RequestBody CartItemRequestDTO cartItemRequestDTO) {
         return cartItemService.createCartItem(cartItemRequestDTO);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('BUYER') or hasRole('ADMIN')")
-    public CartItemResponseDTO updateCartItem(@PathVariable Long id, @RequestBody CartItemRequestDTO cartItemRequestDTO) {
-        return cartItemService.updateCartItem(id, cartItemRequestDTO);
+    @PreAuthorize("hasRole('BUYER')")
+    public CartItemResponseDTO updateCartItem(@PathVariable Long id, @RequestBody CartItemQuantityRequestDTO cartItemQuantityRequestDTO) {
+        return cartItemService.updateCartItem(id, cartItemQuantityRequestDTO);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('BUYER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('BUYER')")
     public void deleteCartItem(@PathVariable Long id) {
         cartItemService.deleteCartItemById(id);
     }

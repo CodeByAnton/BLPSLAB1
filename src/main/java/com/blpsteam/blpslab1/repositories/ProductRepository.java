@@ -13,7 +13,6 @@ import java.util.Optional;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<Product> findByBrandAndNameAndDescriptionAndSeller(String brand, String name, String description, User seller);
-    Optional<Product> findByNameIgnoreCase(String name);
     Page<Product> findByApproved(Boolean approved, Pageable pageable);
     Page<Product> findByApprovedAndNameContainingIgnoreCase( Boolean approved, String name, Pageable pageable);
 

@@ -47,13 +47,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleProductNotFound(ProductNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
+    @ExceptionHandler(CartItemQuantityException.class)
+    public ResponseEntity<String> handleCartItemQuantityException(CartItemQuantityException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
 
-//    @ExceptionHandler({
-//            EntityAbsenceException.class,
-//    })
-//    public ResponseEntity<ExceptionResponseDTO> handleEntityAbsenceException(RuntimeException e) {
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-//                .body(new ExceptionResponseDTO(e.getMessage()));
-//    }
+    @ExceptionHandler({
+            EntityAbsenceException.class,
+    })
+    public ResponseEntity<String> handleEntityAbsenceException(RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(e.getMessage());
+    }
 
 }

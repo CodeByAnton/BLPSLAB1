@@ -69,6 +69,9 @@ public class ProductServiceImpl implements ProductService {
         if (quantity < 0) {
             throw new IllegalArgumentException("Quantity cannot be negative");
         }
+        if (price < 0) {
+            throw new IllegalArgumentException("Price cannot be negative");
+        }
         // Ищем существующий товар с таким же названием и описанием у данного продавца
         Optional<Product> existingProduct = productRepository.findByBrandAndNameAndDescriptionAndSeller(brand,name,description, seller);
 
@@ -91,16 +94,16 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public boolean approveProduct(String name) {
-        System.out.println("Approving product " + name);
-        Optional<Product> productOpt = productRepository.findByNameIgnoreCase(name);
+    public boolean approveProduct(Long productId) {
+        System.out.println("Approving product id" + productId);
+        Optional<Product> productOpt = productRepository.findById(productId);
         if (productOpt.isPresent()) {
             Product product = productOpt.get();
             product.setApproved(true);
             productRepository.save(product);
             return true;
         }
-        throw new ProductNotFoundException("No product with that name was found. Please change the name you are entering.");
+        throw new ProductNotFoundException("No product with that id was found. Please change the id you are entering.");
 
     }
 

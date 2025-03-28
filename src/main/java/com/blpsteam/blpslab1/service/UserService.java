@@ -19,12 +19,11 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
+
     }
 
 
@@ -53,7 +52,7 @@ public class UserService {
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(password));
         user.setRole(role);
-        user.setBalance(100000);
+        user.setBalance(100000L);
         return userRepository.save(user);
     }
 
@@ -70,12 +69,7 @@ public class UserService {
                 .orElse(false);
     }
 
-    public Long getUserIdFromToken(String token) {
-        String username = jwtService.extractUsername(token);
-        return userRepository.findByUsername(username)
-                .map(User::getId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-    }
+
 
     public Long getUserIdFromContext() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
