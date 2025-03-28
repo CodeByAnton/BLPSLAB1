@@ -1,6 +1,7 @@
 package com.blpsteam.blpslab1.service.impl;
 
 import com.blpsteam.blpslab1.data.entities.Cart;
+import com.blpsteam.blpslab1.data.entities.CartItem;
 import com.blpsteam.blpslab1.data.entities.User;
 import com.blpsteam.blpslab1.data.enums.OrderStatus;
 import com.blpsteam.blpslab1.exceptions.impl.CartAbsenceException;
@@ -16,22 +17,24 @@ import com.blpsteam.blpslab1.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Service
 public class CartServiceImpl implements CartService {
 
     private final CartRepository cartRepository;
     private final UserRepository userRepository;
     private final UserService userService;
-    private final CartItemService cartItemService;
     private final OrderRepository orderRepository;
+    private final CartItemRepository cartItemRepository;
 
-    public CartServiceImpl(CartRepository cartRepository, UserRepository userRepository, UserService userService, CartItemService cartItemService, OrderRepository orderRepository) {
+    public CartServiceImpl(CartRepository cartRepository, UserRepository userRepository, UserService userService, CartItemService cartItemService, OrderRepository orderRepository, CartItemRepository cartItemRepository) {
         this.cartRepository = cartRepository;
         this.userRepository = userRepository;
         this.userService = userService;
-        this.cartItemService = cartItemService;
-
         this.orderRepository = orderRepository;
+        this.cartItemRepository = cartItemRepository;
     }
 
     @Override
@@ -46,24 +49,25 @@ public class CartServiceImpl implements CartService {
     @Override
     @Transactional
     public Cart clearCart() {
-        System.out.println("Enter clearCard");
         Long userId = userService.getUserIdFromContext();
-        System.out.println("Recive user from context"+userId);
         Cart cart = cartRepository.findByUserId(userId).orElseThrow(() -> new CartAbsenceException("Корзина для пользователя с id " + userId + " не найдена"));
         if (orderRepository.findByCartIdAndStatus(cart.getId(), OrderStatus.UNPAID).isPresent()) {
 
             throw new RuntimeException("Cart is already used in order");
         }
 
-        System.out.println("Clearing cart for user with ID: " + userId);
-        System.out.println("Cart contains " + cart.getItems().size() + " items.");
+        Set<CartItem> itemsToRemove = new HashSet<>(cart.getItems());
 
-        cartItemService.clearCartAndUpdateProductQuantities(cart.getId());
-        System.out.println(cart.getItems());
-        cart.getItems().clear();
+        for (CartItem item : itemsToRemove) {
+            cart.removeItem(item);
+            cartItemRepository.delete(item);
+        }
+
+        cart.setTotalPrice(0L);
         cartRepository.save(cart);
 
         return cart;
+
     }
 
     @Override
