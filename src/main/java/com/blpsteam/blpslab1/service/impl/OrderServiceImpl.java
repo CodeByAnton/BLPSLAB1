@@ -4,6 +4,11 @@ import com.blpsteam.blpslab1.data.entities.Cart;
 import com.blpsteam.blpslab1.data.entities.Order;
 import com.blpsteam.blpslab1.data.entities.User;
 import com.blpsteam.blpslab1.data.enums.OrderStatus;
+import com.blpsteam.blpslab1.exceptions.OrderPaymentException;
+import com.blpsteam.blpslab1.exceptions.UserBalanceException;
+import com.blpsteam.blpslab1.exceptions.impl.CartItemAbsenceException;
+import com.blpsteam.blpslab1.exceptions.impl.OrderAbsenceException;
+import com.blpsteam.blpslab1.exceptions.impl.UserAbsenceException;
 import com.blpsteam.blpslab1.repositories.OrderRepository;
 import com.blpsteam.blpslab1.repositories.UserRepository;
 import com.blpsteam.blpslab1.service.CartService;
@@ -30,17 +35,16 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order createOrder(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserAbsenceException("User not found"));
 
-        // Проверяем, есть ли уже неоплаченный заказ
         if (orderRepository.existsByUserIdAndStatus(user.getId(), OrderStatus.UNPAID)) {
-            throw new RuntimeException("User already has an unpaid order");
+            throw new OrderPaymentException("User already has an unpaid order");
         }
 
         Cart cart = cartService.getCart();
 
         if (cart.getItems().isEmpty()) {
-            throw new RuntimeException("Cart is empty");
+            throw new CartItemAbsenceException("Cart is empty");
         }
 
         Order order = new Order();
@@ -59,17 +63,17 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void payOrder(User buyer) {
         Order order = orderRepository.findByUserAndStatus(buyer, OrderStatus.UNPAID)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new OrderAbsenceException("Order not found"));
 
         if (order.getStatus() != OrderStatus.UNPAID) {
-            throw new RuntimeException("Order already processed or paid");
+            throw new OrderPaymentException("Order already processed or paid");
         }
 
         User user = order.getUser();
         if (user.getBalance() < order.getTotalPrice()) {
             // Выводим сообщение в консоль вместо отправки в поддержку
             System.out.println("Payment failed: User " + user.getUsername() + " has insufficient funds for order " + order.getId());
-            throw new RuntimeException("Insufficient balance");
+            throw new UserBalanceException("Insufficient balance");
         }
 
         // Снимаем деньги с баланса пользователя
@@ -92,7 +96,7 @@ public class OrderServiceImpl implements OrderService {
         Executors.newSingleThreadScheduledExecutor().schedule(
                 () -> {
                     Order order1 = orderRepository.findById(order.getId())
-                            .orElseThrow(() -> new RuntimeException("Order not found"));
+                            .orElseThrow(() -> new OrderAbsenceException("Order not found"));
 
                     // Отправлять напоминание только если заказ все еще неоплачен
                     if ( order1.getStatus()== OrderStatus.UNPAID) {

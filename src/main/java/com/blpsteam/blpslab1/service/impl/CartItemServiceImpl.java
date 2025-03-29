@@ -10,6 +10,7 @@ import com.blpsteam.blpslab1.dto.CartItemRequestDTO;
 import com.blpsteam.blpslab1.dto.CartItemResponseDTO;
 import com.blpsteam.blpslab1.exceptions.CartItemQuantityException;
 import com.blpsteam.blpslab1.exceptions.impl.CartAbsenceException;
+import com.blpsteam.blpslab1.exceptions.impl.CartItemAbsenceException;
 import com.blpsteam.blpslab1.exceptions.impl.ProductAbsenceException;
 import com.blpsteam.blpslab1.exceptions.impl.UserAbsenceException;
 import com.blpsteam.blpslab1.repositories.*;
@@ -46,7 +47,7 @@ public class CartItemServiceImpl implements CartItemService {
     @Override
     public CartItemResponseDTO getCartItemById(Long id) {
         CartItem cartItem = cartItemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("CartItem with id " + id + " not found"));
+                .orElseThrow(() -> new CartItemAbsenceException("CartItem with id " + id + " not found"));
         return getCartItemResponseDTOFromEntity(cartItem);
     }
 
@@ -54,19 +55,13 @@ public class CartItemServiceImpl implements CartItemService {
     public Page<CartItemResponseDTO> getAllCartItems(Pageable pageable) {
         Long userId = userService.getUserIdFromContext();
 
-        // Находим корзину пользователя по userId
         Cart cart = cartRepository.findByUserId(userId).orElseThrow(() ->
-                new CartAbsenceException("Корзина для пользователя с id " + userId + " не найдена"));
+                new CartAbsenceException("Users (id = " + userId + ") doesn't have a cart"));
 
-        // Получаем все cartItems, которые принадлежат найденной корзине
         List<CartItem> cartItems = cartItemRepository.findByCartId(cart.getId());
         return new PageImpl<>(cartItems.stream()
                 .map(this::getCartItemResponseDTOFromEntity)
                 .collect(Collectors.toList()), pageable, cartItems.size());
-//        Long userId = userService.getUserIdFromContext();
-//        Cart cart = cartRepository.findByUserId(userId).orElseThrow(() -> new CartAbsenceException("Корзина для пользователя с id " + userId + " не найдена"));
-//        return cartItemRepository.findAll(pageable)
-//                .map(this::getCartItemResponseDTOFromEntity);
     }
 
     @Override
@@ -117,7 +112,7 @@ public class CartItemServiceImpl implements CartItemService {
             throw new IllegalArgumentException("You can't edit cart while you have unpaid order");
         }
         CartItem cartItem = cartItemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("CartItem с данным id не существует"));
+                .orElseThrow(() -> new CartItemAbsenceException("CartItem doesn't exist"));
 
         if (cartItemRequestDTO.quantity()<=0){
             throw new IllegalArgumentException("Change product quantity, because quantity should be greater than 0");
@@ -141,22 +136,15 @@ public class CartItemServiceImpl implements CartItemService {
 
             return getCartItemResponseDTOFromEntity(cartItem);
         }
-        throw new CartItemQuantityException("Недостаточно товара");
+        throw new CartItemQuantityException("Not enough product quantity");
     }
 
     @Override
     @Transactional
     public void deleteCartItemById(Long id) {
-//        CartItem cartItem = cartItemRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("CartItem с данным id не существует"));
-//        Product product = cartItem.getProduct();
-//        int quantity = product.getQuantity();
-//        product.setQuantity(quantity+cartItem.getQuantity());
-//        productRepository.save(product);
-//        cartItemRepository.delete(cartItem);
 
         CartItem cartItem = cartItemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("CartItem с данным id не существует"));
+                .orElseThrow(() -> new CartItemAbsenceException("CartItem doesn't exist"));
 
         Long userId=userService.getUserIdFromContext();
         if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.UNPAID)){

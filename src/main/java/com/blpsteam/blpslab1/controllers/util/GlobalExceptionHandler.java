@@ -1,4 +1,4 @@
-package com.blpsteam.blpslab1.controllers;
+package com.blpsteam.blpslab1.controllers.util;
 
 import com.blpsteam.blpslab1.exceptions.*;
 import org.springframework.http.HttpStatus;
@@ -47,7 +47,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleProductNotFound(ProductNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
-    @ExceptionHandler(CartItemQuantityException.class)
+    @ExceptionHandler({CartItemQuantityException.class,
+                       UserBalanceException.class,
+                       OrderPaymentException.class})
     public ResponseEntity<String> handleCartItemQuantityException(CartItemQuantityException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }

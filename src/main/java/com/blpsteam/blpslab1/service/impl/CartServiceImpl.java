@@ -46,28 +46,19 @@ public class CartServiceImpl implements CartService {
     @Override
     @Transactional
     public Cart clearCart() {
-
-        System.out.println("Enter clearCard");
         Long userId = userService.getUserIdFromContext();
 
         if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.UNPAID)){
             throw new IllegalArgumentException("You can't clear cart while you have unpaid order");
-        }
-        System.out.println("Receive user from context"+userId);
-        Cart cart = cartRepository.findByUserId(userId).orElseThrow(() -> new CartAbsenceException("Корзина для пользователя с id " + userId + " не найдена"));
-//        if (orderRepository.findByCartIdAndStatus(cart.getId(), OrderStatus.UNPAID).isPresent()) {
-//
-//            throw new RuntimeException("Cart is already used in order");
-//        }
+        };
 
-        System.out.println("Clearing cart for user with ID: " + userId);
-        System.out.println("Cart contains " + cart.getItems().size() + " items.");
+        Cart cart = cartRepository.findByUserId(userId).orElseThrow(() -> new CartAbsenceException("Корзина для пользователя с id " + userId + " не найдена"));
+
 
         cartItemService.clearCartAndUpdateProductQuantities(cart.getId());
         System.out.println(cart.getItems());
         cart.getItems().clear();
         cartRepository.delete(cart);
-//        cartRepository.save(cart);
 
         return cart;
     }
@@ -77,11 +68,11 @@ public class CartServiceImpl implements CartService {
     public Cart createCart() {
         Long userId = userService.getUserIdFromContext();
         if (cartRepository.findByUserId(userId).isPresent()) {
-            throw new CategoryAbsenceException("У вас уже есть корзина");
+            throw new CartAbsenceException("You already have a cart");
         }
         Cart cart = new Cart();
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserAbsenceException("Такого пользователя не существует"));
+                .orElseThrow(() -> new UserAbsenceException("User with this id not found"));
         cart.setUser(user);
         return cartRepository.save(cart);
     }
