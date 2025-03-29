@@ -4,6 +4,7 @@ import com.blpsteam.blpslab1.data.entities.Cart;
 import com.blpsteam.blpslab1.data.entities.CartItem;
 import com.blpsteam.blpslab1.data.entities.Product;
 import com.blpsteam.blpslab1.data.entities.User;
+import com.blpsteam.blpslab1.data.enums.OrderStatus;
 import com.blpsteam.blpslab1.dto.CartItemQuantityRequestDTO;
 import com.blpsteam.blpslab1.dto.CartItemRequestDTO;
 import com.blpsteam.blpslab1.dto.CartItemResponseDTO;
@@ -11,10 +12,7 @@ import com.blpsteam.blpslab1.exceptions.CartItemQuantityException;
 import com.blpsteam.blpslab1.exceptions.impl.CartAbsenceException;
 import com.blpsteam.blpslab1.exceptions.impl.ProductAbsenceException;
 import com.blpsteam.blpslab1.exceptions.impl.UserAbsenceException;
-import com.blpsteam.blpslab1.repositories.CartItemRepository;
-import com.blpsteam.blpslab1.repositories.CartRepository;
-import com.blpsteam.blpslab1.repositories.ProductRepository;
-import com.blpsteam.blpslab1.repositories.UserRepository;
+import com.blpsteam.blpslab1.repositories.*;
 import com.blpsteam.blpslab1.service.CartItemService;
 import com.blpsteam.blpslab1.service.UserService;
 import org.springframework.data.domain.Page;
@@ -34,13 +32,15 @@ public class CartItemServiceImpl implements CartItemService {
     private final CartRepository cartRepository;
     private final UserService userService;
     private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
 
-    public CartItemServiceImpl(CartItemRepository cartItemRepository, ProductRepository productRepository, CartRepository cartRepository, UserService userService, UserRepository userRepository) {
+    public CartItemServiceImpl(CartItemRepository cartItemRepository, ProductRepository productRepository, CartRepository cartRepository, UserService userService, UserRepository userRepository, OrderRepository orderRepository) {
         this.cartItemRepository = cartItemRepository;
         this.productRepository = productRepository;
         this.cartRepository = cartRepository;
         this.userService = userService;
         this.userRepository = userRepository;
+        this.orderRepository = orderRepository;
     }
 
     @Override
@@ -72,6 +72,8 @@ public class CartItemServiceImpl implements CartItemService {
     @Override
     @Transactional
     public CartItemResponseDTO createCartItem(CartItemRequestDTO cartItemRequestDTO) {
+
+
         if (cartItemRequestDTO.quantity()<=0){
             throw new IllegalArgumentException("Change product quantity, because quantity should be greater than 0");
         }
@@ -84,7 +86,12 @@ public class CartItemServiceImpl implements CartItemService {
                     newCart.setUser(user);
                     return cartRepository.save(newCart);
                 });
-        CartItem cartItem = getCartItemFromDTO(cartItemRequestDTO);
+        Long userId=cart.getUser().getId();
+        if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.UNPAID)){
+            throw new IllegalArgumentException("You can't edit cart while you have unpaid order");
+        }
+
+        CartItem cartItem = getCartItemFromDTO(cartItemRequestDTO, userId);
         Product product = cartItem.getProduct();
         System.out.println(product.getId());
         if (cartItemRepository.findByCartIdAndProductId(cart.getId(), product.getId()).isPresent()) {
@@ -105,10 +112,14 @@ public class CartItemServiceImpl implements CartItemService {
     @Override
     @Transactional
     public CartItemResponseDTO updateCartItem(Long id, CartItemQuantityRequestDTO cartItemRequestDTO) {
+        Long userId=userService.getUserIdFromContext();
+        if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.UNPAID)){
+            throw new IllegalArgumentException("You can't edit cart while you have unpaid order");
+        }
         CartItem cartItem = cartItemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("CartItem с данным id не существует"));
 
-        if (cartItem.getQuantity()+cartItemRequestDTO.quantity()<=0){
+        if (cartItemRequestDTO.quantity()<=0){
             throw new IllegalArgumentException("Change product quantity, because quantity should be greater than 0");
         }
 
@@ -147,7 +158,15 @@ public class CartItemServiceImpl implements CartItemService {
         CartItem cartItem = cartItemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("CartItem с данным id не существует"));
 
+        Long userId=userService.getUserIdFromContext();
+        if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.UNPAID)){
+            throw new IllegalArgumentException("You can't edit cart while you have unpaid order");
+        }
+
         Cart cart = cartItem.getCart();
+        if (!cart.getUser().getId().equals(userService.getUserIdFromContext())){
+            throw new IllegalArgumentException("You can't remove item not from your cart");
+        }
         cart.removeItem(cartItem);
 
 
@@ -179,12 +198,12 @@ public class CartItemServiceImpl implements CartItemService {
         System.out.println(cartItemRepository.findByCartId(cartId));
     }
 
-    private CartItem getCartItemFromDTO(CartItemRequestDTO cartItemRequestDTO) {
+    private CartItem getCartItemFromDTO(CartItemRequestDTO cartItemRequestDTO, Long userId) {
         CartItem cartItem = new CartItem();
         cartItem.setQuantity(cartItemRequestDTO.quantity());
         Product product = productRepository.findById(cartItemRequestDTO.productId())
                 .orElseThrow(() -> new ProductAbsenceException("Product с данным id не существует"));
-        Cart cart = cartRepository.findById(cartItemRequestDTO.cartId())
+        Cart cart = cartRepository.findByUserId(userId)
                 .orElseThrow(()-> new CartAbsenceException("Cart с данным id не существует"));
         cartItem.setProduct(product);
         cartItem.setUnitPrice(product.getPrice().intValue());

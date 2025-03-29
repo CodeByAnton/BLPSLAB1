@@ -33,7 +33,7 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Проверяем, есть ли уже неоплаченный заказ
-        if (orderRepository.existsByUserAndStatus(user, OrderStatus.UNPAID)) {
+        if (orderRepository.existsByUserIdAndStatus(user.getId(), OrderStatus.UNPAID)) {
             throw new RuntimeException("User already has an unpaid order");
         }
 

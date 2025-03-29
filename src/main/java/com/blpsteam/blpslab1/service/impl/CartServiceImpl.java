@@ -46,8 +46,13 @@ public class CartServiceImpl implements CartService {
     @Override
     @Transactional
     public Cart clearCart() {
+
         System.out.println("Enter clearCard");
         Long userId = userService.getUserIdFromContext();
+
+        if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.UNPAID)){
+            throw new IllegalArgumentException("You can't clear cart while you have unpaid order");
+        }
         System.out.println("Receive user from context"+userId);
         Cart cart = cartRepository.findByUserId(userId).orElseThrow(() -> new CartAbsenceException("Корзина для пользователя с id " + userId + " не найдена"));
 //        if (orderRepository.findByCartIdAndStatus(cart.getId(), OrderStatus.UNPAID).isPresent()) {

@@ -1,5 +1,5 @@
 package com.blpsteam.blpslab1.dto;
 
-public record CartItemRequestDTO(int quantity, Long cartId,
+public record CartItemRequestDTO(int quantity,
                                  Long productId) {
 }
