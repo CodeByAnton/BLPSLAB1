@@ -23,25 +23,15 @@ public class OrderController {
     @PreAuthorize("hasRole('BUYER')")
     @PostMapping("/create")
     public ResponseEntity<OrderResponseDTO> createOrder(@AuthenticationPrincipal User buyer) {
-        try {
-            Order order = orderService.createOrder(buyer.getId()); // Получаем userId из аутентифицированного пользователя
-            return ResponseEntity.status(HttpStatus.CREATED).body(new OrderResponseDTO(buyer.getUsername(),order.getTotalPrice()));
-        } catch (RuntimeException e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
+        Order order = orderService.createOrder(buyer.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(new OrderResponseDTO(buyer.getUsername(),order.getTotalPrice()));
     }
 
     @PreAuthorize("hasRole('BUYER')")
     @PostMapping("/pay")
     public ResponseEntity<String> payOrder(@AuthenticationPrincipal User buyer) {
-        try {
-            orderService.payOrder(buyer);
+        orderService.payOrder(buyer);
+        return new ResponseEntity<>("Payment successful", HttpStatus.OK);
 
-            return new ResponseEntity<>("Payment successful", HttpStatus.OK);
-        } catch (RuntimeException e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
     }
 }
