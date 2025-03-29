@@ -5,8 +5,11 @@ import com.blpsteam.blpslab1.data.entities.User;
 import com.blpsteam.blpslab1.dto.ProductResponseDTO;
 import com.blpsteam.blpslab1.exceptions.ProductNotFoundException;
 import com.blpsteam.blpslab1.exceptions.impl.ProductAbsenceException;
+import com.blpsteam.blpslab1.exceptions.impl.UserAbsenceException;
 import com.blpsteam.blpslab1.repositories.ProductRepository;
+import com.blpsteam.blpslab1.repositories.UserRepository;
 import com.blpsteam.blpslab1.service.ProductService;
+import com.blpsteam.blpslab1.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,10 +23,14 @@ import java.util.Optional;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final UserService userService;
+    private final UserRepository userRepository;
 
 
-    public ProductServiceImpl(ProductRepository productRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, UserService userService, UserRepository userRepository) {
         this.productRepository = productRepository;
+        this.userService = userService;
+        this.userRepository = userRepository;
     }
 
 
@@ -57,7 +64,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product addProduct(String brand, String name, String description, int quantity, Long price, User seller) {
+    public Product addProduct(String brand, String name, String description, int quantity, Long price) {
         if (name==null || name.isEmpty()) {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
@@ -70,6 +77,10 @@ public class ProductServiceImpl implements ProductService {
         if (price < 0) {
             throw new IllegalArgumentException("Price cannot be negative");
         }
+
+        Long userId=userService.getUserIdFromContext();
+        User seller=userRepository.findById(userId).orElseThrow(() -> new UserAbsenceException("User not found"));
+
         // Ищем существующий товар с таким же названием и описанием у данного продавца
         Optional<Product> existingProduct = productRepository.findByBrandAndNameAndDescriptionAndSeller(brand,name,description, seller);
 

@@ -13,6 +13,7 @@ import com.blpsteam.blpslab1.repositories.OrderRepository;
 import com.blpsteam.blpslab1.repositories.UserRepository;
 import com.blpsteam.blpslab1.service.CartService;
 import com.blpsteam.blpslab1.service.OrderService;
+import com.blpsteam.blpslab1.service.UserService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -26,14 +27,17 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final CartService cartService;
+    private final UserService userService;
 
-    public OrderServiceImpl(OrderRepository orderRepository, UserRepository userRepository, CartService cartService) {
+    public OrderServiceImpl(OrderRepository orderRepository, UserRepository userRepository, CartService cartService, UserService userService) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.cartService = cartService;
+        this.userService = userService;
     }
     @Override
-    public Order createOrder(Long userId) {
+    public Order createOrder() {
+        Long userId=userService.getUserIdFromContext();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserAbsenceException("User not found"));
 
@@ -61,7 +65,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void payOrder(User buyer) {
+    public void payOrder() {
+        Long userId=userService.getUserIdFromContext();
+        User buyer=userRepository.findById(userId).orElseThrow(() -> new UserAbsenceException("User not found"));
         Order order = orderRepository.findByUserAndStatus(buyer, OrderStatus.UNPAID)
                 .orElseThrow(() -> new OrderAbsenceException("Order not found"));
 

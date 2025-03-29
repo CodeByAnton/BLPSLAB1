@@ -12,6 +12,6 @@ public interface ProductService {
     ProductResponseDTO getProductById(Long id);
     Page<ProductResponseDTO> getAllProducts(Pageable pageable);
     Page<ProductResponseDTO> getApprovedProducts(String name, Pageable pageable);
-    Product addProduct(String brand, String name, String description, int quantity, Long price, User seller);
+    Product addProduct(String brand, String name, String description, int quantity, Long price);
     boolean approveProduct(Long productId);
 }
