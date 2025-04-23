@@ -15,6 +15,7 @@ import com.blpsteam.blpslab1.exceptions.impl.ProductAbsenceException;
 import com.blpsteam.blpslab1.exceptions.impl.UserAbsenceException;
 import com.blpsteam.blpslab1.repositories.*;
 import com.blpsteam.blpslab1.service.CartItemService;
+import com.blpsteam.blpslab1.service.CartService;
 import com.blpsteam.blpslab1.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -79,8 +80,10 @@ public class CartItemServiceImpl implements CartItemService {
                     User user = userRepository.findById(userService.getUserIdFromContext())
                             .orElseThrow(() -> new UserAbsenceException("There is no user with id " + userService.getUserIdFromContext()));
                     newCart.setUser(user);
+                    System.out.println("Create cart because not exist");
                     return cartRepository.save(newCart);
                 });
+        System.out.println("Cart exists, so continue");
         Long userId=cart.getUser().getId();
         if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.UNPAID)){
             throw new IllegalArgumentException("You can't edit cart while you have unpaid order");
@@ -113,6 +116,7 @@ public class CartItemServiceImpl implements CartItemService {
         }
         CartItem cartItem = cartItemRepository.findById(id)
                 .orElseThrow(() -> new CartItemAbsenceException("CartItem doesn't exist"));
+        int previousQuantity = cartItem.getQuantity();
 
         if (cartItemRequestDTO.quantity()<=0){
             throw new IllegalArgumentException("Change product quantity, because quantity should be greater than 0");
@@ -123,7 +127,7 @@ public class CartItemServiceImpl implements CartItemService {
 
         cartItem.setQuantity(cartItemRequestDTO.quantity());
         Product product = cartItem.getProduct();
-        int newQuantity = product.getQuantity() - cartItem.getQuantity();
+        int newQuantity = product.getQuantity() - cartItem.getQuantity()+previousQuantity;
         if (newQuantity >= 0) {
             Cart cart=cartItem.getCart();
             product.setQuantity(newQuantity);

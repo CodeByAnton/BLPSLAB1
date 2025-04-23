@@ -4,9 +4,7 @@ import com.blpsteam.blpslab1.data.entities.Cart;
 import com.blpsteam.blpslab1.data.entities.User;
 import com.blpsteam.blpslab1.data.enums.OrderStatus;
 import com.blpsteam.blpslab1.exceptions.impl.CartAbsenceException;
-import com.blpsteam.blpslab1.exceptions.impl.CategoryAbsenceException;
 import com.blpsteam.blpslab1.exceptions.impl.UserAbsenceException;
-import com.blpsteam.blpslab1.repositories.CartItemRepository;
 import com.blpsteam.blpslab1.repositories.CartRepository;
 import com.blpsteam.blpslab1.repositories.OrderRepository;
 import com.blpsteam.blpslab1.repositories.UserRepository;
@@ -45,7 +43,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public Cart clearCart() {
+    public void clearCart() {
         Long userId = userService.getUserIdFromContext();
 
         if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.UNPAID)){
@@ -60,7 +58,6 @@ public class CartServiceImpl implements CartService {
         cart.getItems().clear();
         cartRepository.delete(cart);
 
-        return cart;
     }
 
     @Override
@@ -75,5 +72,23 @@ public class CartServiceImpl implements CartService {
                 .orElseThrow(() -> new UserAbsenceException("User with this id not found"));
         cart.setUser(user);
         return cartRepository.save(cart);
+    }
+
+    @Override
+    @Transactional
+    public void clearCartAfterPayment() {
+        Long userId = userService.getUserIdFromContext();
+
+        if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.UNPAID)){
+            throw new IllegalArgumentException("You can't clear cart while you have unpaid order");
+        };
+
+        Cart cart = cartRepository.findByUserId(userId).orElseThrow(() -> new CartAbsenceException("Корзина для пользователя с id " + userId + " не найдена"));
+
+
+        System.out.println(cart.getItems());
+        cart.getItems().clear();
+        cartRepository.delete(cart);
+
     }
 }
