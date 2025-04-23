@@ -4,31 +4,40 @@ package com.blpsteam.blpslab1.service;
 import com.blpsteam.blpslab1.data.entities.User;
 import com.blpsteam.blpslab1.data.enums.Role;
 import com.blpsteam.blpslab1.exceptions.AdminAlreadyExistsException;
+import com.blpsteam.blpslab1.exceptions.InvalidCredentialsException;
 import com.blpsteam.blpslab1.exceptions.UsernameAlreadyExistsException;
+import com.blpsteam.blpslab1.exceptions.UsernameNotFoundException;
 import com.blpsteam.blpslab1.exceptions.impl.UserAbsenceException;
 import com.blpsteam.blpslab1.repositories.UserRepository;
 
+import com.blpsteam.blpslab1.security.JaasCallbackHandler;
+import jakarta.security.auth.message.AuthException;
+import org.apache.catalina.realm.JAASCallbackHandler;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 import java.util.Optional;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
 
     }
 
 
 
-    public User registerUser(String username, String password, Role role) {
+    public User register(String username, String password, Role role) {
 
         if (username == null || username.isBlank()) {
             throw new IllegalArgumentException("Username cannot be empty");
@@ -54,6 +63,23 @@ public class UserService {
         user.setRole(role);
         user.setBalance(100000L);
         return userRepository.save(user);
+    }
+
+
+    public String login(String username, String password) {
+        try {
+            // Аутентификация через JAAS
+            LoginContext loginContext = new LoginContext("MyLoginModule",
+                    new JaasCallbackHandler(username, password));
+            loginContext.login();
+
+            return userRepository.findByUsername(username)
+                    .map(jwtService::generateToken)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found: "+username));
+
+        } catch (LoginException e) {
+            throw new InvalidCredentialsException("Wrong username or password");
+        }
     }
 
 

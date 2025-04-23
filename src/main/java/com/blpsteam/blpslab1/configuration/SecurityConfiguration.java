@@ -2,7 +2,7 @@ package com.blpsteam.blpslab1.configuration;
 
 
 import com.blpsteam.blpslab1.service.CustomUserDetailsService;
-import com.blpsteam.blpslab1.utils.JwtAuthenticationFilter;
+import com.blpsteam.blpslab1.util.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

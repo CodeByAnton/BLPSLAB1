@@ -26,20 +26,23 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register( @RequestBody UserRequestDTO userRequestDto) {
-        User user = userService.registerUser(userRequestDto.username(), userRequestDto.password(), userRequestDto.role());
+        User user = userService.register(userRequestDto.username(), userRequestDto.password(), userRequestDto.role());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(String.format("User %s registered successfully", user.getUsername()));
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserRequestDTO userRequestDto) {
-        if (!userService.checkCredentials(userRequestDto.username(), userRequestDto.password())) {
-            throw new InvalidCredentialsException("Wrong username or password");
-        }
+//        if (!userService.checkCredentials(userRequestDto.username(), userRequestDto.password())) {
+//            throw new InvalidCredentialsException("Wrong username or password");
+//        }
+//
+//        return userService.findByUsername(userRequestDto.username())
+//                .map(user -> ResponseEntity.ok(jwtUtil.generateToken(user)))
+//                .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
 
-        return userService.findByUsername(userRequestDto.username())
-                .map(user -> ResponseEntity.ok(jwtUtil.generateToken(user)))
-                .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+        String token=userService.login(userRequestDto.username(), userRequestDto.password());
+        return ResponseEntity.ok(token);
     }
 }
 
