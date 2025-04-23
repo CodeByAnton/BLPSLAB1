@@ -4,6 +4,7 @@ import com.blpsteam.blpslab1.data.entities.Cart;
 
 public interface CartService {
     Cart getCart();
-    Cart clearCart();
+    void clearCart();
     Cart createCart();
+    void clearCartAfterPayment();
 }

@@ -90,7 +90,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
 
         // Очищаем корзину после успешной оплаты
-        cartService.clearCart();
+        cartService.clearCartAfterPayment();
 
         // Выводим сообщение о успешной оплате
         System.out.println("Payment successful: Order " + order.getId() + " paid. Cart cleared.");

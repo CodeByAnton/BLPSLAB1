@@ -18,10 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/v1/buyer/order")
 public class OrderController {
     private final OrderService orderService;
-    private final UserService userService;
-    public OrderController(OrderService orderService, UserService userService) {
+    public OrderController(OrderService orderService) {
         this.orderService = orderService;
-        this.userService = userService;
     }
     @PreAuthorize("hasRole('BUYER')")
     @PostMapping("/create")
