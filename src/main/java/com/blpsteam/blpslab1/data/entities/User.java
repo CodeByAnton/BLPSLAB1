@@ -34,8 +34,8 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
-    @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Product> products;
+//    @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Product> products;
 
     private Long balance;
 

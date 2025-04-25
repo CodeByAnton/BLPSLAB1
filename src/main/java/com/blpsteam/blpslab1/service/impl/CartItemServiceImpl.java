@@ -90,7 +90,9 @@ public class CartItemServiceImpl implements CartItemService {
         }
 
         CartItem cartItem = getCartItemFromDTO(cartItemRequestDTO, userId);
-        Product product = cartItem.getProduct();
+        Product product = productRepository.findById(cartItem.getProductId()).orElseThrow(
+                () -> new ProductAbsenceException("There is no produt with this id")
+        );
         if (!product.getApproved()){
             throw new IllegalArgumentException("There is no approved product with id " + product.getId());
         }
@@ -124,12 +126,13 @@ public class CartItemServiceImpl implements CartItemService {
         if (cartItemRequestDTO.quantity()<=0){
             throw new IllegalArgumentException("Change product quantity, because quantity should be greater than 0");
         }
-
-        int unitPrice = cartItem.getProduct().getPrice().intValue();
+        Product product = productRepository.findById(cartItem.getProductId()).orElseThrow(
+                () -> new ProductAbsenceException("There is no produt with this id")
+        );
+        int unitPrice = product.getPrice().intValue();
         int totalPrice = unitPrice * cartItemRequestDTO.quantity();
 
         cartItem.setQuantity(cartItemRequestDTO.quantity());
-        Product product = cartItem.getProduct();
         int newQuantity = product.getQuantity() - cartItem.getQuantity()+previousQuantity;
         if (newQuantity >= 0) {
             Cart cart=cartItem.getCart();
@@ -165,7 +168,9 @@ public class CartItemServiceImpl implements CartItemService {
         cart.removeItem(cartItem);
 
 
-        Product product = cartItem.getProduct();
+        Product product = productRepository.findById(cartItem.getProductId()).orElseThrow(
+                () -> new ProductAbsenceException("There is no produt with this id")
+        );
         int quantity = product.getQuantity();
         product.setQuantity(quantity + cartItem.getQuantity()); // Возвращаем товар в магазин
         productRepository.save(product); // Сохраняем изменения в продукте
@@ -182,7 +187,9 @@ public class CartItemServiceImpl implements CartItemService {
 
         System.out.println(cartItems);
         for (CartItem cartItem : cartItems) {
-            Product product = cartItem.getProduct();
+            Product product = productRepository.findById(cartItem.getProductId()).orElseThrow(
+                    () -> new ProductAbsenceException("There is no produt with this id")
+            );
             int quantity = product.getQuantity();
             product.setQuantity(quantity + cartItem.getQuantity());
             productRepository.save(product);
@@ -200,7 +207,7 @@ public class CartItemServiceImpl implements CartItemService {
                 .orElseThrow(() -> new ProductAbsenceException("Product с данным id не существует"));
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseThrow(()-> new CartAbsenceException("Cart с данным id не существует"));
-        cartItem.setProduct(product);
+        cartItem.setProductId(cartItemRequestDTO.productId());
         cartItem.setUnitPrice(product.getPrice().intValue());
         cartItem.setTotalPrice(product.getPrice().intValue()*cartItemRequestDTO.quantity());
         cartItem.setCart(cart);
@@ -215,7 +222,7 @@ public class CartItemServiceImpl implements CartItemService {
                 cartItem.getUnitPrice(),
                 cartItem.getTotalPrice(),
                 cartItem.getCart().getId(),
-                cartItem.getProduct().getId()
+                cartItem.getProductId()
         );
     }
 

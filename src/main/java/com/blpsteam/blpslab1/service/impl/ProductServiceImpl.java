@@ -82,7 +82,7 @@ public class ProductServiceImpl implements ProductService {
         User seller=userRepository.findById(userId).orElseThrow(() -> new UserAbsenceException("User not found"));
 
         // Ищем существующий товар с таким же названием и описанием у данного продавца
-        Optional<Product> existingProduct = productRepository.findByBrandAndNameAndDescriptionAndSeller(brand,name,description, seller);
+        Optional<Product> existingProduct = productRepository.findByBrandAndNameAndDescriptionAndSellerId(brand,name,description, seller.getId());
 
         if (existingProduct.isPresent()) {
             // Если товар существует, суммируем количество
@@ -97,7 +97,7 @@ public class ProductServiceImpl implements ProductService {
             product.setQuantity(quantity);
             product.setPrice(price);
             product.setApproved(false); // По умолчанию товар не одобрен
-            product.setSeller(seller);
+            product.setSellerId(seller.getId());
             return productRepository.save(product);
         }
     }
