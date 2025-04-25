@@ -56,7 +56,8 @@ public class CartServiceImpl implements CartService {
         cartItemService.clearCartAndUpdateProductQuantities(cart.getId());
         System.out.println(cart.getItems());
         cart.getItems().clear();
-        cartRepository.delete(cart);
+        cart.setTotalPrice(0L);
+        cartRepository.save(cart);
 
     }
 
@@ -87,7 +88,6 @@ public class CartServiceImpl implements CartService {
 
 
         System.out.println(cart.getItems());
-        cartItemService.clearCartAndUpdateProductQuantities(cart.getId());
         cart.getItems().clear();
         cart.setTotalPrice(0L);
         cartRepository.save(cart);
