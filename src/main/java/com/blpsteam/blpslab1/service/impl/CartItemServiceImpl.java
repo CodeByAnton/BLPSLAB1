@@ -91,6 +91,9 @@ public class CartItemServiceImpl implements CartItemService {
 
         CartItem cartItem = getCartItemFromDTO(cartItemRequestDTO, userId);
         Product product = cartItem.getProduct();
+        if (!product.getApproved()){
+            throw new IllegalArgumentException("There is no approved product with id " + product.getId());
+        }
         System.out.println(product.getId());
         if (cartItemRepository.findByCartIdAndProductId(cart.getId(), product.getId()).isPresent()) {
             throw new IllegalArgumentException("CartItem with this product already exists");
