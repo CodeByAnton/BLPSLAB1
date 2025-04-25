@@ -178,12 +178,12 @@ public class CartItemServiceImpl implements CartItemService {
         List<CartItem> cartItems = cartItemRepository.findByCartId(cartId);
 
         System.out.println(cartItems);
-        for (CartItem cartItem : cartItems) {
-            Product product = cartItem.getProduct();
-            int quantity = product.getQuantity();
-            product.setQuantity(quantity + cartItem.getQuantity());
-            productRepository.save(product);
-        }
+//        for (CartItem cartItem : cartItems) {
+//            Product product = cartItem.getProduct();
+//            int quantity = product.getQuantity();
+//            product.setQuantity(quantity - cartItem.getQuantity());
+//            productRepository.save(product);
+//        }
         System.out.println("Method clearCartAndUpdateProductQuantities ");
         System.out.println(cartItems);
         cartItemRepository.deleteAll(cartItems);

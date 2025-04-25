@@ -76,6 +76,8 @@ public class OrderServiceImpl implements OrderService {
         }
 
         User user = order.getUser();
+        System.out.println(user.getBalance());
+        System.out.println(order.getTotalPrice());
         if (user.getBalance() < order.getTotalPrice()) {
             // Выводим сообщение в консоль вместо отправки в поддержку
             System.out.println("Payment failed: User " + user.getUsername() + " has insufficient funds for order " + order.getId());

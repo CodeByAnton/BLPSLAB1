@@ -83,12 +83,13 @@ public class CartServiceImpl implements CartService {
             throw new IllegalArgumentException("You can't clear cart while you have unpaid order");
         };
 
-        Cart cart = cartRepository.findByUserId(userId).orElseThrow(() -> new CartAbsenceException("Корзина для пользователя с id " + userId + " не найдена"));
+        Cart cart = cartRepository.findByUserId(userId).orElseThrow(() -> new CartAbsenceException("Cart for user with id= " + userId + " not found"));
 
 
         System.out.println(cart.getItems());
+        cartItemService.clearCartAndUpdateProductQuantities(cart.getId());
         cart.getItems().clear();
-        cartRepository.delete(cart);
-
+        cart.setTotalPrice(0L);
+        cartRepository.save(cart);
     }
 }
