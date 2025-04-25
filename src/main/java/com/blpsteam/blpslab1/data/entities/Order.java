@@ -24,8 +24,6 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
-
-
     @Column(nullable = false)
     private Long totalPrice;
 
@@ -35,6 +33,5 @@ public class Order {
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
-
 
 }
