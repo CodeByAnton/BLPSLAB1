@@ -1,8 +1,8 @@
 package com.blpsteam.blpslab1.service.impl;
 
-import com.blpsteam.blpslab1.data.entities.User;
+import com.blpsteam.blpslab1.data.entities.secondary.User;
 import com.blpsteam.blpslab1.exceptions.UsernameNotFoundException;
-import com.blpsteam.blpslab1.repositories.UserRepository;
+import com.blpsteam.blpslab1.repositories.secondary.UserRepository;
 import com.blpsteam.blpslab1.service.BuyerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

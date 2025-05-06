@@ -1,9 +1,9 @@
 package com.blpsteam.blpslab1.service.impl;
 
-import com.blpsteam.blpslab1.data.entities.Cart;
-import com.blpsteam.blpslab1.data.entities.CartItem;
-import com.blpsteam.blpslab1.data.entities.Product;
-import com.blpsteam.blpslab1.data.entities.User;
+import com.blpsteam.blpslab1.data.entities.secondary.Cart;
+import com.blpsteam.blpslab1.data.entities.secondary.CartItem;
+import com.blpsteam.blpslab1.data.entities.primary.Product;
+import com.blpsteam.blpslab1.data.entities.secondary.User;
 import com.blpsteam.blpslab1.data.enums.OrderStatus;
 import com.blpsteam.blpslab1.dto.CartItemQuantityRequestDTO;
 import com.blpsteam.blpslab1.dto.CartItemRequestDTO;
@@ -13,9 +13,12 @@ import com.blpsteam.blpslab1.exceptions.impl.CartAbsenceException;
 import com.blpsteam.blpslab1.exceptions.impl.CartItemAbsenceException;
 import com.blpsteam.blpslab1.exceptions.impl.ProductAbsenceException;
 import com.blpsteam.blpslab1.exceptions.impl.UserAbsenceException;
-import com.blpsteam.blpslab1.repositories.*;
+import com.blpsteam.blpslab1.repositories.primary.ProductRepository;
+import com.blpsteam.blpslab1.repositories.secondary.CartItemRepository;
+import com.blpsteam.blpslab1.repositories.secondary.CartRepository;
+import com.blpsteam.blpslab1.repositories.secondary.OrderRepository;
+import com.blpsteam.blpslab1.repositories.secondary.UserRepository;
 import com.blpsteam.blpslab1.service.CartItemService;
-import com.blpsteam.blpslab1.service.CartService;
 import com.blpsteam.blpslab1.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -66,7 +69,7 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    @Transactional
+    @Transactional(transactionManager = "jtaTransactionManager")
     public CartItemResponseDTO createCartItem(CartItemRequestDTO cartItemRequestDTO) {
 
 
@@ -106,6 +109,11 @@ public class CartItemServiceImpl implements CartItemService {
             productRepository.save(product);
             cartItem = cartItemRepository.save(cartItem);
             cart.addItem(cartItem);
+
+//            //Throw exception to check 2pc
+//            if (true){
+//                throw new RuntimeException("Checking");
+//            }
             cartRepository.save(cart);
             return getCartItemResponseDTOFromEntity(cartItem);
         }
@@ -113,7 +121,7 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    @Transactional
+    @Transactional(transactionManager = "jtaTransactionManager")
     public CartItemResponseDTO updateCartItem(Long id, CartItemQuantityRequestDTO cartItemRequestDTO) {
         Long userId=userService.getUserIdFromContext();
         if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.UNPAID)){
@@ -150,7 +158,7 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    @Transactional
+    @Transactional(transactionManager = "jtaTransactionManager")
     public void deleteCartItemById(Long id) {
 
         CartItem cartItem = cartItemRepository.findById(id)
@@ -181,7 +189,7 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    @Transactional
+    @Transactional(transactionManager = "jtaTransactionManager")
     public void clearCartAndUpdateProductQuantities(Long cartId) {
         List<CartItem> cartItems = cartItemRepository.findByCartId(cartId);
 

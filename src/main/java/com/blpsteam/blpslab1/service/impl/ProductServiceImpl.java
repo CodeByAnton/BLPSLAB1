@@ -1,13 +1,13 @@
 package com.blpsteam.blpslab1.service.impl;
 
-import com.blpsteam.blpslab1.data.entities.Product;
-import com.blpsteam.blpslab1.data.entities.User;
+import com.blpsteam.blpslab1.data.entities.primary.Product;
+import com.blpsteam.blpslab1.data.entities.secondary.User;
 import com.blpsteam.blpslab1.dto.ProductResponseDTO;
 import com.blpsteam.blpslab1.exceptions.ProductNotFoundException;
 import com.blpsteam.blpslab1.exceptions.impl.ProductAbsenceException;
 import com.blpsteam.blpslab1.exceptions.impl.UserAbsenceException;
-import com.blpsteam.blpslab1.repositories.ProductRepository;
-import com.blpsteam.blpslab1.repositories.UserRepository;
+import com.blpsteam.blpslab1.repositories.primary.ProductRepository;
+import com.blpsteam.blpslab1.repositories.secondary.UserRepository;
 import com.blpsteam.blpslab1.service.ProductService;
 import com.blpsteam.blpslab1.service.UserService;
 import org.springframework.data.domain.Page;

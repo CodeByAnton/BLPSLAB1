@@ -1,4 +1,4 @@
-package com.blpsteam.blpslab1.data.entities;
+package com.blpsteam.blpslab1.data.entities.primary;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -1,7 +1,6 @@
-package com.blpsteam.blpslab1.repositories;
+package com.blpsteam.blpslab1.repositories.primary;
 
-import com.blpsteam.blpslab1.data.entities.Product;
-import com.blpsteam.blpslab1.data.entities.User;
+import com.blpsteam.blpslab1.data.entities.primary.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

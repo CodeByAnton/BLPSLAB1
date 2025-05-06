@@ -1,15 +1,13 @@
 package com.blpsteam.blpslab1.controllers;
 
 
-import com.blpsteam.blpslab1.data.entities.Product;
-import com.blpsteam.blpslab1.data.entities.User;
+import com.blpsteam.blpslab1.data.entities.primary.Product;
 
 import com.blpsteam.blpslab1.dto.ProductRequestDTO;
 import com.blpsteam.blpslab1.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

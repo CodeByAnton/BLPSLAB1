@@ -1,17 +1,13 @@
 package com.blpsteam.blpslab1.controllers;
 
 
-import com.blpsteam.blpslab1.data.entities.User;
+import com.blpsteam.blpslab1.data.entities.secondary.User;
 import com.blpsteam.blpslab1.dto.UserRequestDTO;
 import com.blpsteam.blpslab1.service.UserService;
 import com.blpsteam.blpslab1.service.JwtService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-
-import com.blpsteam.blpslab1.exceptions.UsernameNotFoundException;
-import com.blpsteam.blpslab1.exceptions.InvalidCredentialsException;
 
 @RestController
 @RequestMapping("/api/v1/auth")

@@ -1,5 +1,6 @@
 plugins {
 	id 'java'
+	id 'war'
 	id 'org.springframework.boot' version '3.4.3'
 	id 'io.spring.dependency-management' version '1.1.7'
 }
@@ -7,13 +8,40 @@ plugins {
 group = 'com.blpsteam'
 version = '0.0.1-SNAPSHOT'
 
-java {
-	sourceCompatibility = '17'
-}
+//java {
+//	sourceCompatibility = '17'
+//}
+//
+//configurations {
+//	compileOnly {
+//		extendsFrom annotationProcessor
+//	}
+//}
+//
+//repositories {
+//	mavenCentral()
+//}
+//
+//dependencies {
+//	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//	implementation 'org.springframework.boot:spring-boot-starter-security'
+//	implementation 'org.springframework.boot:spring-boot-starter-web'
+//    compileOnly 'org.projectlombok:lombok'
+//	implementation 'org.postgresql:postgresql:42.7.2'
+//	annotationProcessor 'org.projectlombok:lombok'
+//	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+//
+//	testImplementation 'org.springframework.security:spring-security-test'
+//	implementation 'io.jsonwebtoken:jjwt:0.9.1'
+//	// Добавим зависимость на jaxb-api
+//	implementation 'javax.xml.bind:jaxb-api:2.3.1'
+//
+//	implementation 'jakarta.validation:jakarta.validation-api:3.0.1'
+//}
 
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
 	}
 }
 
@@ -23,21 +51,53 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-    compileOnly 'org.projectlombok:lombok'
-	implementation 'org.postgresql:postgresql:42.7.2'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-	testImplementation 'org.springframework.security:spring-security-test'
+	implementation('org.springframework.boot:spring-boot-starter-web') {
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+	}
+
+	// Используем jboss-logging вместо Logback
+	implementation 'org.jboss.slf4j:slf4j-jboss-logmanager:2.0.1.Final'
+
+	implementation 'org.postgresql:postgresql'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'jakarta.servlet:jakarta.servlet-api:5.0.0'
+	implementation 'jakarta.transaction:jakarta.transaction-api:2.0.1'
+
+
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
-	// Добавим зависимость на jaxb-api
 	implementation 'javax.xml.bind:jaxb-api:2.3.1'
 
-	implementation 'jakarta.validation:jakarta.validation-api:3.0.1'
+	annotationProcessor 'org.projectlombok:lombok'
+	compileOnly 'org.projectlombok:lombok'
+	implementation 'org.jboss.logging:jboss-logging:3.5.3.Final'
+
+
+
+//	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:3.0.1'
+//	runtimeOnly 'org.glassfish.jaxb:jaxb-runtime:3.0.1'
+
+
+
 }
+configurations.all {
+	exclude group: 'ch.qos.logback', module: 'logback-classic'
+	exclude group: 'org.apache.logging.log4j', module: 'log4j-to-slf4j'
+	exclude group: 'jakarta.transaction', module: 'jakarta.transaction-api'
+}
+
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+war {
+	archiveFileName = 'blpslab2.war'
+
+//	// Копирование файла jaas.config в папку WEB-INF
+//	from('src/main/resources/jaas.config') {
+//		into('WEB-INF')  // Поместить в корень WAR в папку WEB-INF
+//	}
 }
