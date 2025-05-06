@@ -1,15 +1,13 @@
 package com.blpsteam.blpslab1.security;
 
-import com.blpsteam.blpslab1.data.entities.User;
+import com.blpsteam.blpslab1.data.entities.core.User;
 import com.blpsteam.blpslab1.exceptions.InvalidCredentialsException;
 import com.blpsteam.blpslab1.exceptions.UsernameNotFoundException;
-import com.blpsteam.blpslab1.repositories.UserRepository;
+import com.blpsteam.blpslab1.repositories.core.UserRepository;
 import com.blpsteam.blpslab1.util.SpringContext;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.security.auth.Subject;
 import javax.security.auth.callback.*;
-import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 import java.io.IOException;
