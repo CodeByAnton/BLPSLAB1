@@ -1,10 +1,8 @@
 package com.blpsteam.blpslab1.controllers;
 
-import com.blpsteam.blpslab1.data.entities.Cart;
+import com.blpsteam.blpslab1.data.entities.core.Cart;
 import com.blpsteam.blpslab1.dto.CartResponseDTO;
-import com.blpsteam.blpslab1.repositories.CartRepository;
 import com.blpsteam.blpslab1.service.CartService;
-import com.blpsteam.blpslab1.service.impl.CartServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

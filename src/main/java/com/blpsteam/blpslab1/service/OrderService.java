@@ -1,7 +1,6 @@
 package com.blpsteam.blpslab1.service;
 
-import com.blpsteam.blpslab1.data.entities.Order;
-import com.blpsteam.blpslab1.data.entities.User;
+import com.blpsteam.blpslab1.data.entities.core.Order;
 
 public interface OrderService {
     Order createOrder();

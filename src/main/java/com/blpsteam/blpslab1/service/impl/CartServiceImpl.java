@@ -1,13 +1,13 @@
 package com.blpsteam.blpslab1.service.impl;
 
-import com.blpsteam.blpslab1.data.entities.Cart;
-import com.blpsteam.blpslab1.data.entities.User;
+import com.blpsteam.blpslab1.data.entities.core.Cart;
+import com.blpsteam.blpslab1.data.entities.core.User;
 import com.blpsteam.blpslab1.data.enums.OrderStatus;
 import com.blpsteam.blpslab1.exceptions.impl.CartAbsenceException;
 import com.blpsteam.blpslab1.exceptions.impl.UserAbsenceException;
-import com.blpsteam.blpslab1.repositories.CartRepository;
-import com.blpsteam.blpslab1.repositories.OrderRepository;
-import com.blpsteam.blpslab1.repositories.UserRepository;
+import com.blpsteam.blpslab1.repositories.core.CartRepository;
+import com.blpsteam.blpslab1.repositories.core.OrderRepository;
+import com.blpsteam.blpslab1.repositories.core.UserRepository;
 import com.blpsteam.blpslab1.service.CartItemService;
 import com.blpsteam.blpslab1.service.CartService;
 import com.blpsteam.blpslab1.service.UserService;

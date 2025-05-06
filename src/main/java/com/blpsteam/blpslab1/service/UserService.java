@@ -1,18 +1,16 @@
 package com.blpsteam.blpslab1.service;
 
 
-import com.blpsteam.blpslab1.data.entities.User;
+import com.blpsteam.blpslab1.data.entities.core.User;
 import com.blpsteam.blpslab1.data.enums.Role;
 import com.blpsteam.blpslab1.exceptions.AdminAlreadyExistsException;
 import com.blpsteam.blpslab1.exceptions.InvalidCredentialsException;
 import com.blpsteam.blpslab1.exceptions.UsernameAlreadyExistsException;
 import com.blpsteam.blpslab1.exceptions.UsernameNotFoundException;
 import com.blpsteam.blpslab1.exceptions.impl.UserAbsenceException;
-import com.blpsteam.blpslab1.repositories.UserRepository;
+import com.blpsteam.blpslab1.repositories.core.UserRepository;
 
 import com.blpsteam.blpslab1.security.JaasCallbackHandler;
-import jakarta.security.auth.message.AuthException;
-import org.apache.catalina.realm.JAASCallbackHandler;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;

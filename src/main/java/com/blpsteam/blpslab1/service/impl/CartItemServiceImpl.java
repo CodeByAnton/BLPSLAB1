@@ -1,9 +1,9 @@
 package com.blpsteam.blpslab1.service.impl;
 
-import com.blpsteam.blpslab1.data.entities.Cart;
-import com.blpsteam.blpslab1.data.entities.CartItem;
-import com.blpsteam.blpslab1.data.entities.Product;
-import com.blpsteam.blpslab1.data.entities.User;
+import com.blpsteam.blpslab1.data.entities.core.Cart;
+import com.blpsteam.blpslab1.data.entities.core.CartItem;
+import com.blpsteam.blpslab1.data.entities.product.Product;
+import com.blpsteam.blpslab1.data.entities.core.User;
 import com.blpsteam.blpslab1.data.enums.OrderStatus;
 import com.blpsteam.blpslab1.dto.CartItemQuantityRequestDTO;
 import com.blpsteam.blpslab1.dto.CartItemRequestDTO;
@@ -13,9 +13,12 @@ import com.blpsteam.blpslab1.exceptions.impl.CartAbsenceException;
 import com.blpsteam.blpslab1.exceptions.impl.CartItemAbsenceException;
 import com.blpsteam.blpslab1.exceptions.impl.ProductAbsenceException;
 import com.blpsteam.blpslab1.exceptions.impl.UserAbsenceException;
-import com.blpsteam.blpslab1.repositories.*;
+import com.blpsteam.blpslab1.repositories.core.CartItemRepository;
+import com.blpsteam.blpslab1.repositories.core.CartRepository;
+import com.blpsteam.blpslab1.repositories.core.OrderRepository;
+import com.blpsteam.blpslab1.repositories.core.UserRepository;
+import com.blpsteam.blpslab1.repositories.product.ProductRepository;
 import com.blpsteam.blpslab1.service.CartItemService;
-import com.blpsteam.blpslab1.service.CartService;
 import com.blpsteam.blpslab1.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;

@@ -1,4 +1,4 @@
-package com.blpsteam.blpslab1.data.entities;
+package com.blpsteam.blpslab1.data.entities.core;
 
 import com.blpsteam.blpslab1.data.enums.OrderStatus;
 import jakarta.persistence.*;

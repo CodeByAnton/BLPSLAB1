@@ -1,24 +1,22 @@
 package com.blpsteam.blpslab1.service.impl;
 
-import com.blpsteam.blpslab1.data.entities.Cart;
-import com.blpsteam.blpslab1.data.entities.Order;
-import com.blpsteam.blpslab1.data.entities.User;
+import com.blpsteam.blpslab1.data.entities.core.Cart;
+import com.blpsteam.blpslab1.data.entities.core.Order;
+import com.blpsteam.blpslab1.data.entities.core.User;
 import com.blpsteam.blpslab1.data.enums.OrderStatus;
 import com.blpsteam.blpslab1.exceptions.OrderPaymentException;
 import com.blpsteam.blpslab1.exceptions.UserBalanceException;
 import com.blpsteam.blpslab1.exceptions.impl.CartItemAbsenceException;
 import com.blpsteam.blpslab1.exceptions.impl.OrderAbsenceException;
 import com.blpsteam.blpslab1.exceptions.impl.UserAbsenceException;
-import com.blpsteam.blpslab1.repositories.OrderRepository;
-import com.blpsteam.blpslab1.repositories.UserRepository;
+import com.blpsteam.blpslab1.repositories.core.OrderRepository;
+import com.blpsteam.blpslab1.repositories.core.UserRepository;
 import com.blpsteam.blpslab1.service.CartService;
 import com.blpsteam.blpslab1.service.OrderService;
 import com.blpsteam.blpslab1.service.UserService;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 

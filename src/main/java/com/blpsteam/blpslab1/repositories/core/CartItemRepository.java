@@ -1,7 +1,6 @@
-package com.blpsteam.blpslab1.repositories;
+package com.blpsteam.blpslab1.repositories.core;
 
-import com.blpsteam.blpslab1.data.entities.CartItem;
-import com.blpsteam.blpslab1.data.entities.Product;
+import com.blpsteam.blpslab1.data.entities.core.CartItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

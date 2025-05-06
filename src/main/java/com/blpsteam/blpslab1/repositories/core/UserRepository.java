@@ -1,6 +1,6 @@
-package com.blpsteam.blpslab1.repositories;
+package com.blpsteam.blpslab1.repositories.core;
 
-import com.blpsteam.blpslab1.data.entities.User;
+import com.blpsteam.blpslab1.data.entities.core.User;
 import com.blpsteam.blpslab1.data.enums.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

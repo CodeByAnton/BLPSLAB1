@@ -1,4 +1,4 @@
-package com.blpsteam.blpslab1.data.entities;
+package com.blpsteam.blpslab1.data.entities.core;
 
 import com.blpsteam.blpslab1.data.enums.Role;
 import jakarta.persistence.*;
@@ -10,7 +10,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
 
 
 @Entity
