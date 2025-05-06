@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.4.3'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'war'
 }
 
 group = 'com.blpsteam'
@@ -24,20 +25,54 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-    compileOnly 'org.projectlombok:lombok'
+
+	implementation('org.springframework.boot:spring-boot-starter-web') {
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+	}
+
+	// Логгирование для WildFly
+	implementation 'org.jboss.slf4j:slf4j-jboss-logmanager:2.0.1.Final'
+
+	// База данных
 	implementation 'org.postgresql:postgresql:42.7.2'
+
+	// Lombok
+	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	// JWT
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0' // Замена для jaxb-api
+
+	// Jakarta EE
+	implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+	implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
+	implementation 'jakarta.transaction:jakarta.transaction-api:2.0.1'
+
+	// Тестирование
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
 	testImplementation 'org.springframework.security:spring-security-test'
-	implementation 'io.jsonwebtoken:jjwt:0.9.1'
-	// Добавим зависимость на jaxb-api
-	implementation 'javax.xml.bind:jaxb-api:2.3.1'
+}
 
-	implementation 'jakarta.validation:jakarta.validation-api:3.0.1'
+configurations.all {
+	// Исключаем конфликтующие зависимости
+	exclude group: 'ch.qos.logback', module: 'logback-classic'
+	exclude group: 'org.apache.logging.log4j', module: 'log4j-to-slf4j'
+	exclude group: 'javax.servlet', module: 'javax.servlet-api'
+	exclude group: 'javax.xml.bind', module: 'jaxb-api'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+war {
+	archiveFileName = 'blpslab2.war'
+	classpath configurations.runtimeClasspath.filter {
+		it.name.contains('jakarta.servlet-api') ||
+				!it.name.contains('spring-boot-starter-tomcat')
+	}
 }
