@@ -21,13 +21,11 @@ import java.util.Properties;
 public class PrimaryDataSourceConfig {
 
     @Bean
-    @Primary
     public DataSource primaryDataSource() throws NamingException {
         return (DataSource) new JndiTemplate().lookup("java:/DB1DataSource");
     }
 
     @Bean
-    @Primary
     public LocalContainerEntityManagerFactoryBean primaryEntityManagerFactory() throws NamingException {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(primaryDataSource());
