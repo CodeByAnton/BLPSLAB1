@@ -42,7 +42,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    @Transactional
+    @Transactional(transactionManager = "jtaTransactionManager")
     public void clearCart() {
         Long userId = userService.getUserIdFromContext();
 
@@ -58,7 +58,6 @@ public class CartServiceImpl implements CartService {
         cart.getItems().clear();
         cart.setTotalPrice(0L);
         cartRepository.save(cart);
-
     }
 
     @Override
