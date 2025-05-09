@@ -18,14 +18,14 @@ public class OrderController {
         this.orderService = orderService;
     }
     @PreAuthorize("hasRole('BUYER')")
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<OrderResponseDTO> createOrder() {
         Order order = orderService.createOrder();
         return ResponseEntity.status(HttpStatus.CREATED).body(new OrderResponseDTO(order.getTotalPrice()));
     }
 
     @PreAuthorize("hasRole('BUYER')")
-    @PostMapping("/pay")
+    @PostMapping("/payment")
     public ResponseEntity<String> payOrder() {
 
         orderService.payOrder();

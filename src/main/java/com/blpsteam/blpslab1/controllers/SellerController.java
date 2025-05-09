@@ -32,7 +32,7 @@ public class SellerController {
      */
 
     @PreAuthorize("hasRole('SELLER')")
-    @PostMapping("/addproduct")
+    @PostMapping("/product")
     public ResponseEntity<?> addItem(@RequestBody ProductRequestDTO productRequestDTO) {
 
 

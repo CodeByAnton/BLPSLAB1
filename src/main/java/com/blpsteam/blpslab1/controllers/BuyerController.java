@@ -32,7 +32,7 @@ public class BuyerController {
     }
 
     @PreAuthorize("hasRole('BUYER')")
-    @PutMapping("/increasebalance")
+    @PutMapping("/balance")
     public ResponseEntity<String> increaseBalance(@RequestBody BalanceIncreaseRequestDTO balanceIncreaseRequestDTO, Principal principal) {
         buyerService.increaseBalance(principal.getName(), balanceIncreaseRequestDTO.amount());
         return ResponseEntity.ok("Balance successfully increased by " + balanceIncreaseRequestDTO.amount());

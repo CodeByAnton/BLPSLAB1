@@ -21,13 +21,13 @@ public class AdminController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/showallproducts")
+    @GetMapping("/allproducts")
     public Page<ProductResponseDTO> getAllProducts(Pageable pageable) {
         return productService.getAllProducts(pageable);
     }
 
     // Одобрение товара по id
-    @PutMapping("/approve")
+    @PutMapping("/productstatus")
     public ResponseEntity<String> approveProduct(@RequestBody ProductRequestIdDTO productIdDTO) {
         System.out.println(productIdDTO);
         boolean updated = productService.approveProduct(productIdDTO.productId());
