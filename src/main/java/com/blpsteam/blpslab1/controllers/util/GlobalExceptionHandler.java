@@ -1,6 +1,7 @@
 package com.blpsteam.blpslab1.controllers.util;
 
 import com.blpsteam.blpslab1.exceptions.*;
+import jakarta.persistence.PersistenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -62,11 +63,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
-    @ExceptionHandler({
-            EntityAbsenceException.class,
-    })
+    @ExceptionHandler({EntityAbsenceException.class})
     public ResponseEntity<String> handleEntityAbsenceException(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(e.getMessage());
+    }
+
+    @ExceptionHandler(PersistenceException.class)
+    public ResponseEntity<String> handlePersistenceException(PersistenceException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("An unexpected database error occurred.");
     }
 }
