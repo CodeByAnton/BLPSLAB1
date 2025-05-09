@@ -10,6 +10,8 @@ import com.blpsteam.blpslab1.repositories.primary.ProductRepository;
 import com.blpsteam.blpslab1.repositories.secondary.UserRepository;
 import com.blpsteam.blpslab1.service.ProductService;
 import com.blpsteam.blpslab1.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,10 +24,10 @@ import java.util.Optional;
 @Service
 public class ProductServiceImpl implements ProductService {
 
+    private static final Logger log = LoggerFactory.getLogger(ProductServiceImpl.class);
     private final ProductRepository productRepository;
     private final UserService userService;
     private final UserRepository userRepository;
-
 
     public ProductServiceImpl(ProductRepository productRepository, UserService userService, UserRepository userRepository) {
         this.productRepository = productRepository;
@@ -66,6 +68,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(transactionManager = "jtaTransactionManager")
     public Product addProduct(String brand, String name, String description, int quantity, Long price) {
+        log.info("AddProduct method");
         if (name==null || name.isEmpty()) {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
@@ -89,6 +92,7 @@ public class ProductServiceImpl implements ProductService {
             // Если товар существует, суммируем количество
             Product product = existingProduct.get();
             product.setQuantity(product.getQuantity() + quantity);
+            log.info("Product added successfully");
             return productRepository.save(product);
         } else {
             Product product = new Product();
@@ -99,6 +103,7 @@ public class ProductServiceImpl implements ProductService {
             product.setPrice(price);
             product.setApproved(false); // По умолчанию товар не одобрен
             product.setSellerId(seller.getId());
+            log.info("New Product added successfully, but not approved");
             return productRepository.save(product);
         }
     }
@@ -106,12 +111,14 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public boolean approveProduct(Long productId) {
+        log.info("ApproveProduct method");
         System.out.println("Approving product id" + productId);
         Optional<Product> productOpt = productRepository.findById(productId);
         if (productOpt.isPresent()) {
             Product product = productOpt.get();
             product.setApproved(true);
             productRepository.save(product);
+            log.info("Product {} approved successfully", productId);
             return true;
         }
         throw new ProductNotFoundException("No product with that id was found. Please change the id you are entering.");
@@ -132,6 +139,4 @@ public class ProductServiceImpl implements ProductService {
 
         );
     }
-
-
 }
