@@ -24,7 +24,7 @@ public class JaasLoginModule implements LoginModule {
 
     @Override
     public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState, Map<String, ?> options) {
-        log.debug("Initializing JaasLoginModule");
+        log.info("Initializing JaasLoginModule");
         this.subject = subject;
         this.callbackHandler = callbackHandler;
         this.userRepository = SpringContext.getBean(UserRepository.class);
@@ -33,7 +33,7 @@ public class JaasLoginModule implements LoginModule {
     @Override
     public boolean login() throws LoginException {
         try {
-            log.debug("Performing JAAS login");
+            log.info("Performing JAAS login");
 
             NameCallback nameCallback = new NameCallback("username");
             PasswordCallback passwordCallback = new PasswordCallback("password", false);
@@ -43,7 +43,7 @@ public class JaasLoginModule implements LoginModule {
             String username = nameCallback.getName();
             String password = new String(passwordCallback.getPassword());
 
-            log.debugf("Attempting to authenticate user: %s", username);
+            log.infof("Attempting to authenticate user: %s", username);
 
             User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -52,7 +52,7 @@ public class JaasLoginModule implements LoginModule {
                     SpringContext.getBean(org.springframework.security.crypto.password.PasswordEncoder.class);
 
             if (!passwordEncoder.matches(password, user.getPassword())) {
-                log.warnf("Authentication failed for user '%s': invalid credentials", username);
+                log.infof("Authentication failed for user '%s': invalid credentials", username);
                 throw new InvalidCredentialsException("Invalid credentials");
             }
 
@@ -68,19 +68,16 @@ public class JaasLoginModule implements LoginModule {
 
     @Override
     public boolean commit() throws LoginException {
-        log.debug("Committing JAAS login");
         return true;
     }
 
     @Override
     public boolean abort() throws LoginException {
-        log.debug("Aborting JAAS login");
         return false;
     }
 
     @Override
     public boolean logout() throws LoginException {
-        log.debug("Logging out JAAS user");
         return true;
     }
 }

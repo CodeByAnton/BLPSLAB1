@@ -67,19 +67,19 @@ public class UserService {
 
     public String login(String username, String password) {
         try {
-            log.debug("Attempting to login user: " + username);
+            log.info("Attempting to login user: " + username);
             // Аутентификация через JAAS
             LoginContext loginContext = new LoginContext("MyLoginModule",
                     new JaasCallbackHandler(username, password));
             loginContext.login();
-            log.debug("Logged in user: " + username);
+            log.info("Logged in user: " + username);
 
             return userRepository.findByUsername(username)
                     .map(jwtService::generateToken)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found: "+username));
 
         } catch (LoginException e) {
-            throw new InvalidCredentialsException("Wrong username or password"+e.getMessage());
+            throw new InvalidCredentialsException("Wrong username or password");
         }
     }
 

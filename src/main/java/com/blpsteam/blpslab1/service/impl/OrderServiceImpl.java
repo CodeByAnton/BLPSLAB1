@@ -123,7 +123,6 @@ public class OrderServiceImpl implements OrderService {
     private void sendPaymentReminder(Order order) {
         User user = order.getUser();
         String message = "User with name " + user.getUsername() + ", your order #" + order.getId() + " is still unpaid. Please complete the payment.";
-
-        System.out.println("Payment reminder: " + message);
+        log.info("Payment reminder: {}", message);
     }
 }
