@@ -20,6 +20,7 @@ import com.blpsteam.blpslab1.repositories.secondary.OrderRepository;
 import com.blpsteam.blpslab1.repositories.secondary.UserRepository;
 import com.blpsteam.blpslab1.service.CartItemService;
 import com.blpsteam.blpslab1.service.UserService;
+import jakarta.persistence.PersistenceException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -109,18 +110,17 @@ public class CartItemServiceImpl implements CartItemService {
         if (newQuantity >= 0) {
             product.setQuantity(newQuantity);
             productRepository.save(product);
+
+//            if (true) {
+//                throw new PersistenceException("testsing transcation");
+//            }
             cartItem = cartItemRepository.save(cartItem);
             cart.addItem(cartItem);
-
-//            //Throw exception to check 2pc
-//            if (true){
-//                throw new RuntimeException("Checking");
-//            }
             cartRepository.save(cart);
             log.info("Cart item with id {} created for user {}", cartItem.getId(),cart.getUser().getId());
             return getCartItemResponseDTOFromEntity(cartItem);
         }
-        throw new CartItemQuantityException("Недостаточно товара");
+        throw new CartItemQuantityException("Insufficient product");
     }
 
     @Override
