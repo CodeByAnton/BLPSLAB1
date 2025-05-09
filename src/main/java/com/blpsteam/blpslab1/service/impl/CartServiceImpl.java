@@ -11,12 +11,15 @@ import com.blpsteam.blpslab1.repositories.secondary.UserRepository;
 import com.blpsteam.blpslab1.service.CartItemService;
 import com.blpsteam.blpslab1.service.CartService;
 import com.blpsteam.blpslab1.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CartServiceImpl implements CartService {
 
+    private static final Logger log = LoggerFactory.getLogger(CartServiceImpl.class);
     private final CartRepository cartRepository;
     private final UserRepository userRepository;
     private final UserService userService;
@@ -44,6 +47,7 @@ public class CartServiceImpl implements CartService {
     @Override
     @Transactional(transactionManager = "jtaTransactionManager")
     public void clearCart() {
+        log.info("ClearCart method");
         Long userId = userService.getUserIdFromContext();
 
         if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.UNPAID)){
@@ -52,17 +56,17 @@ public class CartServiceImpl implements CartService {
 
         Cart cart = cartRepository.findByUserId(userId).orElseThrow(() -> new CartAbsenceException("Корзина для пользователя с id " + userId + " не найдена"));
 
-
         cartItemService.clearCartAndUpdateProductQuantities(cart.getId());
-        System.out.println(cart.getItems());
         cart.getItems().clear();
         cart.setTotalPrice(0L);
         cartRepository.save(cart);
+        log.info("Cart has been cleared for user {}", userId);
     }
 
     @Override
     @Transactional
     public Cart createCart() {
+        log.info("CreateCart method");
         Long userId = userService.getUserIdFromContext();
         if (cartRepository.findByUserId(userId).isPresent()) {
             throw new CartAbsenceException("You already have a cart");
@@ -71,12 +75,14 @@ public class CartServiceImpl implements CartService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserAbsenceException("User with this id not found"));
         cart.setUser(user);
+        log.info("Cart has been created for user {}", userId);
         return cartRepository.save(cart);
     }
 
     @Override
     @Transactional
     public void clearCartAfterPayment() {
+        log.info("ClearCartAfterPayment method");
         Long userId = userService.getUserIdFromContext();
 
         if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.UNPAID)){
@@ -84,11 +90,11 @@ public class CartServiceImpl implements CartService {
         };
 
         Cart cart = cartRepository.findByUserId(userId).orElseThrow(() -> new CartAbsenceException("Cart for user with id= " + userId + " not found"));
-
-
+        
         System.out.println(cart.getItems());
         cart.getItems().clear();
         cart.setTotalPrice(0L);
         cartRepository.save(cart);
+        log.info("Cart has been cleared after payment for user {}", userId);
     }
 }
