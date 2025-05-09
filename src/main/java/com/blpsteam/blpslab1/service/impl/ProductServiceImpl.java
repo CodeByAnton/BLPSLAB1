@@ -13,7 +13,7 @@ import com.blpsteam.blpslab1.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.Optional;
@@ -64,6 +64,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(transactionManager = "jtaTransactionManager")
     public Product addProduct(String brand, String name, String description, int quantity, Long price) {
         if (name==null || name.isEmpty()) {
             throw new IllegalArgumentException("Name cannot be null or empty");
@@ -103,6 +104,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public boolean approveProduct(Long productId) {
         System.out.println("Approving product id" + productId);
         Optional<Product> productOpt = productRepository.findById(productId);
