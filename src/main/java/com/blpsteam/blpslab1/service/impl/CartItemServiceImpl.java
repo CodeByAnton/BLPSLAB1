@@ -25,13 +25,15 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class CartItemServiceImpl implements CartItemService {
-
+    private static final Logger log = LoggerFactory.getLogger(CartItemServiceImpl.class);
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
     private final CartRepository cartRepository;
@@ -71,8 +73,7 @@ public class CartItemServiceImpl implements CartItemService {
     @Override
     @Transactional(transactionManager = "jtaTransactionManager")
     public CartItemResponseDTO createCartItem(CartItemRequestDTO cartItemRequestDTO) {
-
-
+        log.info("CreateCartItem method called");
         if (cartItemRequestDTO.quantity()<=0){
             throw new IllegalArgumentException("Change product quantity, because quantity should be greater than 0");
         }
@@ -86,7 +87,7 @@ public class CartItemServiceImpl implements CartItemService {
                     System.out.println("Create cart because not exist");
                     return cartRepository.save(newCart);
                 });
-        System.out.println("Cart exists, so continue");
+        log.info("Cart exists for user {}, so continue", cart.getUser().getId());
         Long userId=cart.getUser().getId();
         if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.UNPAID)){
             throw new IllegalArgumentException("You can't edit cart while you have unpaid order");
@@ -99,7 +100,7 @@ public class CartItemServiceImpl implements CartItemService {
         if (!product.getApproved()){
             throw new IllegalArgumentException("There is no approved product with id " + product.getId());
         }
-        System.out.println(product.getId());
+
         if (cartItemRepository.findByCartIdAndProductId(cart.getId(), product.getId()).isPresent()) {
             throw new IllegalArgumentException("CartItem with this product already exists");
         }
@@ -115,6 +116,7 @@ public class CartItemServiceImpl implements CartItemService {
 //                throw new RuntimeException("Checking");
 //            }
             cartRepository.save(cart);
+            log.info("Cart item with id {} created for user {}", cartItem.getId(),cart.getUser().getId());
             return getCartItemResponseDTOFromEntity(cartItem);
         }
         throw new CartItemQuantityException("Недостаточно товара");
@@ -123,6 +125,7 @@ public class CartItemServiceImpl implements CartItemService {
     @Override
     @Transactional(transactionManager = "jtaTransactionManager")
     public CartItemResponseDTO updateCartItem(Long id, CartItemQuantityRequestDTO cartItemRequestDTO) {
+        log.info("UpdateCartItem method called");
         Long userId=userService.getUserIdFromContext();
         if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.UNPAID)){
             throw new IllegalArgumentException("You can't edit cart while you have unpaid order");
@@ -151,7 +154,7 @@ public class CartItemServiceImpl implements CartItemService {
 
             cart.updateTotalPrice();
             cartRepository.save(cart);
-
+            log.info("Cart item with id {} updated for user {}", cartItem.getId(),cart.getUser().getId());
             return getCartItemResponseDTOFromEntity(cartItem);
         }
         throw new CartItemQuantityException("Not enough product quantity");
@@ -160,7 +163,7 @@ public class CartItemServiceImpl implements CartItemService {
     @Override
     @Transactional(transactionManager = "jtaTransactionManager")
     public void deleteCartItemById(Long id) {
-
+        log.info("DeleteCartItemById method called");
         CartItem cartItem = cartItemRepository.findById(id)
                 .orElseThrow(() -> new CartItemAbsenceException("CartItem doesn't exist"));
 
@@ -185,12 +188,14 @@ public class CartItemServiceImpl implements CartItemService {
 
         cartItemRepository.delete(cartItem); // Удаляем cartItem из репозитория
         cartRepository.save(cart);
+        log.info("Cart item with id {} deleted for user {}", id, userId);
 
     }
 
     @Override
     @Transactional(transactionManager = "jtaTransactionManager")
     public void clearCartAndUpdateProductQuantities(Long cartId) {
+        log.info("ClearCartAndUpdateProductQuantities method called");
         List<CartItem> cartItems = cartItemRepository.findByCartId(cartId);
 
         System.out.println(cartItems);
@@ -202,10 +207,7 @@ public class CartItemServiceImpl implements CartItemService {
             product.setQuantity(quantity + cartItem.getQuantity());
             productRepository.save(product);
         }
-        System.out.println("Method clearCartAndUpdateProductQuantities ");
-        System.out.println(cartItems);
         cartItemRepository.deleteAll(cartItems);
-        System.out.println(cartItemRepository.findByCartId(cartId));
     }
 
     private CartItem getCartItemFromDTO(CartItemRequestDTO cartItemRequestDTO, Long userId) {
@@ -233,6 +235,4 @@ public class CartItemServiceImpl implements CartItemService {
                 cartItem.getProductId()
         );
     }
-
-
 }
