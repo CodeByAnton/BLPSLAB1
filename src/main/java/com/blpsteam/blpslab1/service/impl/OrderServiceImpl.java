@@ -14,6 +14,8 @@ import com.blpsteam.blpslab1.repositories.secondary.UserRepository;
 import com.blpsteam.blpslab1.service.CartService;
 import com.blpsteam.blpslab1.service.OrderService;
 import com.blpsteam.blpslab1.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,8 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class OrderServiceImpl implements OrderService {
+
+    private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final CartService cartService;
@@ -37,6 +41,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(transactionManager = "jtaTransactionManager")
     public Order createOrder() {
+        log.info("CreateOrder method");
         Long userId=userService.getUserIdFromContext();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserAbsenceException("User not found"));
@@ -58,15 +63,15 @@ public class OrderServiceImpl implements OrderService {
         order.setCreatedAt(LocalDateTime.now());
 
         orderRepository.save(order);
-
+        log.info("Order created by user {}", user.getId());
         schedulePaymentReminder(order);
-
         return order;
     }
 
     @Override
     @Transactional(transactionManager = "jtaTransactionManager")
     public void payOrder() {
+        log.info("PayOrder method");
         Long userId=userService.getUserIdFromContext();
         User buyer=userRepository.findById(userId).orElseThrow(() -> new UserAbsenceException("User not found"));
         Order order = orderRepository.findByUserAndStatus(buyer, OrderStatus.UNPAID)
@@ -96,6 +101,7 @@ public class OrderServiceImpl implements OrderService {
         cartService.clearCartAfterPayment();
 
         // Выводим сообщение о успешной оплате
+        log.info("Payment successful: Order {} has been payed. Cart cleared", order.getId());
         System.out.println("Payment successful: Order " + order.getId() + " paid. Cart cleared.");
     }
 
