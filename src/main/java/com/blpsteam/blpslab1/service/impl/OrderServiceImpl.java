@@ -105,8 +105,6 @@ public class OrderServiceImpl implements OrderService {
         System.out.println("Payment successful: Order " + order.getId() + " paid. Cart cleared.");
     }
 
-
-
     private void schedulePaymentReminder(Order order) {
         Executors.newSingleThreadScheduledExecutor().schedule(
                 () -> {

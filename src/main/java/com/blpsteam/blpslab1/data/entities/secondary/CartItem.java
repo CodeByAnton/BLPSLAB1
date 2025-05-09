@@ -13,13 +13,17 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartItem {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false)
     private int quantity;
+
     @Column(nullable = false)
     private int unitPrice;
+
     @Column(nullable = false)
     private int totalPrice;
 
@@ -32,5 +36,4 @@ public class CartItem {
 //    private Product product;
     @Column(nullable = false, name = "product_id")
     private Long productId;
-
 }

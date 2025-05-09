@@ -25,7 +25,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Value("${app.jwt.secret}")
     private String secret;
 
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -55,9 +54,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 logger.error("JWT Authentication failed: " + e.getMessage());
             }
         }
-
         filterChain.doFilter(request, response);
     }
-
-
 }

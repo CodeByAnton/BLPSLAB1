@@ -38,6 +38,4 @@ public class CartController {
         Cart cart = cartService.createCart();
         return ResponseEntity.ok(new CartResponseDTO(cart.getId(), cart.getUser().getUsername()));
     }
-
-
 }

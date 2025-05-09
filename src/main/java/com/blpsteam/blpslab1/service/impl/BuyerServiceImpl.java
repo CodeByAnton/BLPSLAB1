@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 @Service
 public class BuyerServiceImpl implements BuyerService {
+
     private static final Logger log = LoggerFactory.getLogger(BuyerServiceImpl.class);
     private final UserRepository userRepository;
     public BuyerServiceImpl(UserRepository userRepository) {

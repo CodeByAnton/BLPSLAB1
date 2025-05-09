@@ -37,5 +37,4 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
         }
     }
-
 }

@@ -19,6 +19,7 @@ import java.util.Collection;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,19 +34,12 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
-//    @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Product> products;
-
     private Long balance;
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();
     }
-
-
-
     @Override
     public boolean isAccountNonExpired() { return true; }
     @Override
@@ -54,5 +48,4 @@ public class User implements UserDetails {
     public boolean isCredentialsNonExpired() { return true; }
     @Override
     public boolean isEnabled() { return true; }
-    
 }

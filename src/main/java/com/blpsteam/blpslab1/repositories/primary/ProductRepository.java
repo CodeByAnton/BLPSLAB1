@@ -14,7 +14,4 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<Product> findByBrandAndNameAndDescriptionAndSellerId(String brand, String name, String description, Long sellerId);
     Page<Product> findByApproved(Boolean approved, Pageable pageable);
     Page<Product> findByApprovedAndNameContainingIgnoreCase( Boolean approved, String name, Pageable pageable);
-
-
-
 }

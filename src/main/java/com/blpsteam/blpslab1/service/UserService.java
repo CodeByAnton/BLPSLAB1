@@ -24,11 +24,11 @@ import java.util.Optional;
 
 @Service
 public class UserService {
+
+    private static final Logger log = Logger.getLogger(UserService.class);
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private static final Logger log = Logger.getLogger(UserService.class);
-
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
@@ -36,8 +36,6 @@ public class UserService {
         this.jwtService = jwtService;
 
     }
-
-
 
     public User register(String username, String password, Role role) {
 
@@ -67,7 +65,6 @@ public class UserService {
         return userRepository.save(user);
     }
 
-
     public String login(String username, String password) {
         try {
             log.debug("Attempting to login user: " + username);
@@ -86,8 +83,6 @@ public class UserService {
         }
     }
 
-
-
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
@@ -98,8 +93,6 @@ public class UserService {
                 .map(user -> passwordEncoder.matches(password, user.getPassword()))
                 .orElse(false);
     }
-
-
 
     public Long getUserIdFromContext() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();

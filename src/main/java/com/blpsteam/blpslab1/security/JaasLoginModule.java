@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.Map;
 
 public class JaasLoginModule implements LoginModule {
+
     private static final Logger log = Logger.getLogger(JaasLoginModule.class);
 
     private Subject subject;

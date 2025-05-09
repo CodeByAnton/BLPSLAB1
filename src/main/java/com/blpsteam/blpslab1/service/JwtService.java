@@ -17,7 +17,6 @@ public class JwtService {
     @Value("${app.jwt.lifetime}")
     private long lifetime;
 
-
     public String generateToken(User user) {
         return Jwts.builder()
                 .setSubject(user.getUsername())
@@ -38,5 +37,4 @@ public class JwtService {
                 .parseClaimsJws(token)
                 .getBody();
     }
-
 }

@@ -35,7 +35,6 @@ public class ProductServiceImpl implements ProductService {
         this.userRepository = userRepository;
     }
 
-
     @Override
     public ProductResponseDTO getProductById(Long id) {
         Product product = productRepository.findById(id)
@@ -124,7 +123,6 @@ public class ProductServiceImpl implements ProductService {
         throw new ProductNotFoundException("No product with that id was found. Please change the id you are entering.");
 
     }
-
 
     private ProductResponseDTO getProductResponseDTOFromEntity(Product product) {
 

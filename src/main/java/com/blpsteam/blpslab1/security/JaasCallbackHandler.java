@@ -3,6 +3,7 @@ package com.blpsteam.blpslab1.security;
 import javax.security.auth.callback.*;
 
 public class JaasCallbackHandler implements CallbackHandler {
+
     private final String username;
     private final String password;
 

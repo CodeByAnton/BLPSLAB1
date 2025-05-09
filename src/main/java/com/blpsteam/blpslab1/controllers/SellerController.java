@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/seller")
 public class SellerController {
 
-
-
     private final ProductService productService;
 
     public SellerController(ProductService productService) {
@@ -34,15 +32,7 @@ public class SellerController {
     @PreAuthorize("hasRole('SELLER')")
     @PostMapping("/product")
     public ResponseEntity<?> addItem(@RequestBody ProductRequestDTO productRequestDTO) {
-
-
-
-
-
         Product product= productService.addProduct(productRequestDTO.brand(), productRequestDTO.name(), productRequestDTO.description(),productRequestDTO.quantity(),productRequestDTO.price());
         return ResponseEntity.status(HttpStatus.CREATED).body(String.format("Item %s added successfully", product.getName()));
-
-
-
     }
 }

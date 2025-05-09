@@ -49,5 +49,4 @@ public class Cart {
         }
         this.totalPrice = total;
     }
-
 }

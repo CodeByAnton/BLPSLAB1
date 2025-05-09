@@ -48,8 +48,4 @@ public class SecondaryDataSourceConfig {
 
         return em;
     }
-
-
-
-
 }
