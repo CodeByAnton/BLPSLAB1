@@ -4,6 +4,6 @@ import com.blpsteam.blpslab1.data.entities.secondary.Order;
 
 public interface OrderService {
     Order createOrder();
-    void payOrder();
+    String payOrder();
     void sendPaymentReminder(Order order);
 }

@@ -28,8 +28,8 @@ public class OrderController {
     @PostMapping("/payment")
     public ResponseEntity<String> payOrder() {
 
-        orderService.payOrder();
-        return new ResponseEntity<>("Payment successful", HttpStatus.OK);
+
+        return new ResponseEntity<>(orderService.payOrder(), HttpStatus.OK);
 
     }
 }

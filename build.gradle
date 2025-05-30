@@ -73,6 +73,8 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	compileOnly 'org.projectlombok:lombok'
 	implementation 'org.jboss.logging:jboss-logging:3.5.3.Final'
+	implementation 'jakarta.resource:jakarta.resource-api:2.1.0'
+
 
 
 

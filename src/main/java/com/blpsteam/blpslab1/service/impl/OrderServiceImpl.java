@@ -9,8 +9,10 @@ import com.blpsteam.blpslab1.exceptions.UserBalanceException;
 import com.blpsteam.blpslab1.exceptions.impl.CartItemAbsenceException;
 import com.blpsteam.blpslab1.exceptions.impl.OrderAbsenceException;
 import com.blpsteam.blpslab1.exceptions.impl.UserAbsenceException;
+import com.blpsteam.blpslab1.jca.YookassaConnection;
 import com.blpsteam.blpslab1.repositories.secondary.OrderRepository;
 import com.blpsteam.blpslab1.repositories.secondary.UserRepository;
+import com.blpsteam.blpslab1.service.CartItemService;
 import com.blpsteam.blpslab1.service.CartService;
 import com.blpsteam.blpslab1.service.OrderService;
 import com.blpsteam.blpslab1.service.UserService;
@@ -19,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -31,12 +34,18 @@ public class OrderServiceImpl implements OrderService {
     private final UserRepository userRepository;
     private final CartService cartService;
     private final UserService userService;
+    private final YookassaConnection yookassaConnection;
 
-    public OrderServiceImpl(OrderRepository orderRepository, UserRepository userRepository, CartService cartService, UserService userService) {
+
+    public OrderServiceImpl(OrderRepository orderRepository, UserRepository userRepository,
+                            CartService cartService, UserService userService,
+                            YookassaConnection yookassaConnection) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.cartService = cartService;
         this.userService = userService;
+        this.yookassaConnection = yookassaConnection;
+
     }
     @Override
     @Transactional(transactionManager = "jtaTransactionManager")
@@ -96,7 +105,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(transactionManager = "jtaTransactionManager")
-    public void payOrder() {
+    public String payOrder() {
         log.info("PayOrder method");
         Long userId=userService.getUserIdFromContext();
         User buyer=userRepository.findById(userId).orElseThrow(() -> new UserAbsenceException("User not found"));
@@ -106,45 +115,33 @@ public class OrderServiceImpl implements OrderService {
         if (order.getStatus() != OrderStatus.UNPAID) {
             throw new OrderPaymentException("Order already processed or paid");
         }
-
-        User user = order.getUser();
-        System.out.println(user.getBalance());
-        System.out.println(order.getTotalPrice());
-        if (user.getBalance() < order.getTotalPrice()) {
-            // Выводим сообщение в консоль вместо отправки в поддержку
-            System.out.println("Payment failed: User " + user.getUsername() + " has insufficient funds for order " + order.getId());
-            throw new UserBalanceException("Insufficient balance");
-        }
-
-        // Снимаем деньги с баланса пользователя
-        user.setBalance(user.getBalance() - order.getTotalPrice());
+//        User user = order.getUser();
+//        System.out.println(user.getBalance());
+//        System.out.println(order.getTotalPrice());
+//        if (user.getBalance() < order.getTotalPrice()) {
+//            // Выводим сообщение в консоль вместо отправки в поддержку
+//            System.out.println("Payment failed: User " + user.getUsername() + " has insufficient funds for order " + order.getId());
+//            throw new UserBalanceException("Insufficient balance");
+//        }
+        log.info("Before calling yookassa");
+        String link= yookassaConnection.createPayment(order.getTotalPrice());
+        log.info(link);
+//
+//        // Снимаем деньги с баланса пользователя
+//        user.setBalance(user.getBalance() - order.getTotalPrice());
         order.setStatus(OrderStatus.PAID); // Обновляем статус на "оплачено"
-
-        userRepository.save(user);
+//
+//        userRepository.save(user);
         orderRepository.save(order);
-
+//
         // Очищаем корзину после успешной оплаты
         cartService.clearCartAfterPayment();
-
+//
         // Выводим сообщение о успешной оплате
         log.info("Payment successful: Order {} has been payed. Cart cleared", order.getId());
-        System.out.println("Payment successful: Order " + order.getId() + " paid. Cart cleared.");
+        return link;
+//        System.out.println("Payment successful: Order " + order.getId() + " paid. Cart cleared.");
     }
-
-//    private void schedulePaymentReminder(Order order) {
-//        Executors.newSingleThreadScheduledExecutor().schedule(
-//                () -> {
-//                    Order order1 = orderRepository.findById(order.getId())
-//                            .orElseThrow(() -> new OrderAbsenceException("Order not found"));
-//
-//                    // Отправлять напоминание только если заказ все еще неоплачен
-//                    if ( order1.getStatus()== OrderStatus.UNPAID) {
-//                        sendPaymentReminder(order);
-//                    }
-//                },
-//                1, TimeUnit.MINUTES);
-//
-//    }
 
 
 

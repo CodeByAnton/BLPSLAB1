@@ -33,7 +33,6 @@ public class OrderReminderScheduler {
             try {
                 orderService.sendPaymentReminder(order);
                 order.setReminderSent(true);
-                log.info("Reminder sent for order {}", order.getId());
             } catch (Exception e) {
                 log.warn("Failed to send reminder for order {}: {}", order.getId(), e.getMessage());
             }
