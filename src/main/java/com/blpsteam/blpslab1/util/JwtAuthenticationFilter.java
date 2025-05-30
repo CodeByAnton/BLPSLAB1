@@ -1,6 +1,5 @@
 package com.blpsteam.blpslab1.util;
 
-import com.blpsteam.blpslab1.service.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;

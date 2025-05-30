@@ -40,13 +40,41 @@ public class OrderServiceImpl implements OrderService {
     }
     @Override
     @Transactional(transactionManager = "jtaTransactionManager")
+//    public Order createOrder() {
+//        log.info("CreateOrder method");
+//        Long userId=userService.getUserIdFromContext();
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new UserAbsenceException("User not found"));
+//
+//        if (orderRepository.existsByUserIdAndStatus(user.getId(), OrderStatus.UNPAID)) {
+//            throw new OrderPaymentException("User already has an unpaid order");
+//        }
+//
+//        Cart cart = cartService.getCart();
+//
+//        if (cart.getItems().isEmpty()) {
+//            throw new CartItemAbsenceException("Cart is empty");
+//        }
+//
+//        Order order = new Order();
+//        order.setUser(user);
+//        order.setTotalPrice(cart.getTotalPrice());
+//        order.setStatus(OrderStatus.UNPAID); // Изначально статус "не оплачено"
+//        order.setCreatedAt(LocalDateTime.now());
+//
+//        orderRepository.save(order);
+//        log.info("Order created by user {}", user.getId());
+//        schedulePaymentReminder(order);
+//        return order;
+//    }
+
     public Order createOrder() {
         log.info("CreateOrder method");
-        Long userId=userService.getUserIdFromContext();
+        Long userId = userService.getUserIdFromContext();
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserAbsenceException("User not found"));
+                .orElseThrow(()->new UserAbsenceException("User not found"));
 
-        if (orderRepository.existsByUserIdAndStatus(user.getId(), OrderStatus.UNPAID)) {
+        if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.UNPAID)) {
             throw new OrderPaymentException("User already has an unpaid order");
         }
 
@@ -59,14 +87,12 @@ public class OrderServiceImpl implements OrderService {
         Order order = new Order();
         order.setUser(user);
         order.setTotalPrice(cart.getTotalPrice());
-        order.setStatus(OrderStatus.UNPAID); // Изначально статус "не оплачено"
+        order.setStatus(OrderStatus.UNPAID);
         order.setCreatedAt(LocalDateTime.now());
 
-        orderRepository.save(order);
-        log.info("Order created by user {}", user.getId());
-        schedulePaymentReminder(order);
-        return order;
+        return orderRepository.save(order);
     }
+
 
     @Override
     @Transactional(transactionManager = "jtaTransactionManager")
@@ -105,24 +131,24 @@ public class OrderServiceImpl implements OrderService {
         System.out.println("Payment successful: Order " + order.getId() + " paid. Cart cleared.");
     }
 
-    private void schedulePaymentReminder(Order order) {
-        Executors.newSingleThreadScheduledExecutor().schedule(
-                () -> {
-                    Order order1 = orderRepository.findById(order.getId())
-                            .orElseThrow(() -> new OrderAbsenceException("Order not found"));
+//    private void schedulePaymentReminder(Order order) {
+//        Executors.newSingleThreadScheduledExecutor().schedule(
+//                () -> {
+//                    Order order1 = orderRepository.findById(order.getId())
+//                            .orElseThrow(() -> new OrderAbsenceException("Order not found"));
+//
+//                    // Отправлять напоминание только если заказ все еще неоплачен
+//                    if ( order1.getStatus()== OrderStatus.UNPAID) {
+//                        sendPaymentReminder(order);
+//                    }
+//                },
+//                1, TimeUnit.MINUTES);
+//
+//    }
 
-                    // Отправлять напоминание только если заказ все еще неоплачен
-                    if ( order1.getStatus()== OrderStatus.UNPAID) {
-                        sendPaymentReminder(order);
-                    }
-                },
-                1, TimeUnit.MINUTES);
 
-    }
 
-    private void sendPaymentReminder(Order order) {
-        User user = order.getUser();
-        String message = "User with name " + user.getUsername() + ", your order #" + order.getId() + " is still unpaid. Please complete the payment.";
-        log.info("Payment reminder: {}", message);
+    public void sendPaymentReminder(Order order) {
+        log.info("Sending payment reminder to user {} for order {}", order.getUser().getId(), order.getId());
     }
 }

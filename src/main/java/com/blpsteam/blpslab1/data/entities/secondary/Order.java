@@ -31,6 +31,8 @@ public class Order {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status;
+    private boolean reminderSent = false;
+
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
