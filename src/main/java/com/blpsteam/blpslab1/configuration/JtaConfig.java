@@ -31,7 +31,7 @@ public class JtaConfig {
 
     @Bean
     @Primary
-    public JtaTransactionManager w(UserTransaction userTransaction, UserTransactionManager userTransactionManager) {
+    public JtaTransactionManager jtaTransactionManager(UserTransaction userTransaction, UserTransactionManager userTransactionManager) {
         JtaTransactionManager jtaTransactionManager = new JtaTransactionManager();
         jtaTransactionManager.setUserTransaction(userTransaction);
         jtaTransactionManager.setTransactionManager(userTransactionManager);
