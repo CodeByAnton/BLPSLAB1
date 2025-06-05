@@ -1,7 +1,7 @@
 package com.blpsteam.blpslab1.controllers;
 
 
-import com.blpsteam.blpslab1.data.entities.secondary.User;
+import com.blpsteam.blpslab1.data.entities.core.User;
 import com.blpsteam.blpslab1.dto.UserRequestDTO;
 import com.blpsteam.blpslab1.service.UserService;
 import com.blpsteam.blpslab1.service.JwtService;
@@ -29,14 +29,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserRequestDTO userRequestDto) {
-//        if (!userService.checkCredentials(userRequestDto.username(), userRequestDto.password())) {
-//            throw new InvalidCredentialsException("Wrong username or password");
-//        }
-//
-//        return userService.findByUsername(userRequestDto.username())
-//                .map(user -> ResponseEntity.ok(jwtUtil.generateToken(user)))
-//                .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
-
         String token=userService.login(userRequestDto.username(), userRequestDto.password());
         return ResponseEntity.ok(token);
     }

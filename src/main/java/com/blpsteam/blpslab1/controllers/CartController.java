@@ -1,6 +1,6 @@
 package com.blpsteam.blpslab1.controllers;
 
-import com.blpsteam.blpslab1.data.entities.secondary.Cart;
+import com.blpsteam.blpslab1.data.entities.core.Cart;
 import com.blpsteam.blpslab1.dto.CartResponseDTO;
 import com.blpsteam.blpslab1.service.CartService;
 import org.springframework.http.ResponseEntity;

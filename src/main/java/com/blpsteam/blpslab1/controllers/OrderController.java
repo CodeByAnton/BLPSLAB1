@@ -1,6 +1,6 @@
 package com.blpsteam.blpslab1.controllers;
 
-import com.blpsteam.blpslab1.data.entities.secondary.Order;
+import com.blpsteam.blpslab1.data.entities.core.Order;
 import com.blpsteam.blpslab1.dto.OrderResponseDTO;
 import com.blpsteam.blpslab1.service.OrderService;
 import org.springframework.http.HttpStatus;

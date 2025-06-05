@@ -1,18 +1,16 @@
 package com.blpsteam.blpslab1.service;
 
 
-import com.blpsteam.blpslab1.data.entities.secondary.User;
+import com.blpsteam.blpslab1.data.entities.core.User;
 import com.blpsteam.blpslab1.data.enums.Role;
 import com.blpsteam.blpslab1.exceptions.AdminAlreadyExistsException;
 import com.blpsteam.blpslab1.exceptions.InvalidCredentialsException;
 import com.blpsteam.blpslab1.exceptions.UsernameAlreadyExistsException;
 import com.blpsteam.blpslab1.exceptions.UsernameNotFoundException;
 import com.blpsteam.blpslab1.exceptions.impl.UserAbsenceException;
-import com.blpsteam.blpslab1.repositories.secondary.UserRepository;
+import com.blpsteam.blpslab1.repositories.core.UserRepository;
 
 import com.blpsteam.blpslab1.security.JaasCallbackHandler;
-import com.blpsteam.blpslab1.security.JaasLoginModule;
-import org.jboss.logging.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,7 +23,6 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    private static final Logger log = Logger.getLogger(UserService.class);
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -67,12 +64,10 @@ public class UserService {
 
     public String login(String username, String password) {
         try {
-            log.info("Attempting to login user: " + username);
             // Аутентификация через JAAS
             LoginContext loginContext = new LoginContext("MyLoginModule",
                     new JaasCallbackHandler(username, password));
             loginContext.login();
-            log.info("Logged in user: " + username);
 
             return userRepository.findByUsername(username)
                     .map(jwtService::generateToken)

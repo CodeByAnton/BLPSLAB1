@@ -1,13 +1,13 @@
 package com.blpsteam.blpslab1.service.impl;
 
-import com.blpsteam.blpslab1.data.entities.secondary.Cart;
-import com.blpsteam.blpslab1.data.entities.secondary.User;
+import com.blpsteam.blpslab1.data.entities.core.Cart;
+import com.blpsteam.blpslab1.data.entities.core.User;
 import com.blpsteam.blpslab1.data.enums.OrderStatus;
 import com.blpsteam.blpslab1.exceptions.impl.CartAbsenceException;
 import com.blpsteam.blpslab1.exceptions.impl.UserAbsenceException;
-import com.blpsteam.blpslab1.repositories.secondary.CartRepository;
-import com.blpsteam.blpslab1.repositories.secondary.OrderRepository;
-import com.blpsteam.blpslab1.repositories.secondary.UserRepository;
+import com.blpsteam.blpslab1.repositories.core.CartRepository;
+import com.blpsteam.blpslab1.repositories.core.OrderRepository;
+import com.blpsteam.blpslab1.repositories.core.UserRepository;
 import com.blpsteam.blpslab1.service.CartItemService;
 import com.blpsteam.blpslab1.service.CartService;
 import com.blpsteam.blpslab1.service.UserService;
@@ -45,7 +45,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    @Transactional(transactionManager = "jtaTransactionManager")
+    @Transactional
     public void clearCart() {
         log.info("ClearCart method");
         Long userId = userService.getUserIdFromContext();

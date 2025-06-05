@@ -1,4 +1,4 @@
-package com.blpsteam.blpslab1.data.entities.secondary;
+package com.blpsteam.blpslab1.data.entities.core;
 
 import com.blpsteam.blpslab1.data.enums.Role;
 import jakarta.persistence.*;

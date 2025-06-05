@@ -1,8 +1,8 @@
 package com.blpsteam.blpslab1.util;
 
-import com.blpsteam.blpslab1.data.entities.secondary.Order;
+import com.blpsteam.blpslab1.data.entities.core.Order;
 import com.blpsteam.blpslab1.data.enums.OrderStatus;
-import com.blpsteam.blpslab1.repositories.secondary.OrderRepository;
+import com.blpsteam.blpslab1.repositories.core.OrderRepository;
 import com.blpsteam.blpslab1.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
