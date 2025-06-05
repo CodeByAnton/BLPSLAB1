@@ -9,7 +9,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5432:5432"  # WildFly ожидает на этом порту db1
+      - "5432:5432"
+    command:
+      - "postgres"
+      - "-c"
+      - "max_prepared_transactions=100"
     volumes:
       - db1_data:/var/lib/postgresql/data
     networks:
@@ -24,6 +28,10 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - "5433:5432"  # перенаправляем порт 5433 хоста на 5432 контейнера
+    command:
+      - "postgres"
+      - "-c"
+      - "max_prepared_transactions=100"
     volumes:
       - db2_data:/var/lib/postgresql/data
     networks:
