@@ -2,25 +2,15 @@ package com.blpsteam.blpslab1;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-public class Blpslab1Application extends SpringBootServletInitializer {
+public class Blpslab1Application {
 
-//    public static void main(String[] args) {
-////        System.setProperty("java.security.auth.login.config",
-////                Blpslab1Application.class.getClassLoader().getResource("jaas.config").toString());
-//        SpringApplication.run(Blpslab1Application.class, args);
-//    }
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+    public static void main(String[] args) {
         System.setProperty("java.security.auth.login.config",
                 Blpslab1Application.class.getClassLoader().getResource("jaas.config").toString());
-        return application.sources(Blpslab1Application.class);
-
+        SpringApplication.run(Blpslab1Application.class, args);
     }
-
 }

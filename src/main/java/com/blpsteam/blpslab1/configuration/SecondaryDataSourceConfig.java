@@ -1,51 +1,45 @@
 package com.blpsteam.blpslab1.configuration;
 
-
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jndi.JndiTemplate;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
-import javax.naming.NamingException;
 import javax.sql.DataSource;
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
+
 
 @Configuration
 @EnableJpaRepositories(
-        basePackages = "com.blpsteam.blpslab1.repositories.secondary",
-        entityManagerFactoryRef = "secondaryEntityManagerFactory",
+        basePackages = "com.blpsteam.blpslab1.repositories.product",
+        entityManagerFactoryRef = "productEntityManagerFactory",
         transactionManagerRef = "jtaTransactionManager"
 )
 public class SecondaryDataSourceConfig {
 
     @Bean
-    public DataSource secondaryDataSource() throws NamingException {
-        return (DataSource) new JndiTemplate().lookup("java:/DB2DataSource");
+    public LocalContainerEntityManagerFactoryBean productEntityManagerFactory(
+            EntityManagerFactoryBuilder builder,
+            @Qualifier("secondaryDataSource") DataSource dataSource) {
+
+        return builder
+                .dataSource(dataSource)
+                .jta(true)
+                .packages("com.blpsteam.blpslab1.data.entities.product")
+                .persistenceUnit("productPU")
+                .properties(jpaProperties())
+                .build();
     }
 
-    @Bean
-    public LocalContainerEntityManagerFactoryBean secondaryEntityManagerFactory() throws NamingException {
-        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(secondaryDataSource());
-        em.setPackagesToScan("com.blpsteam.blpslab1.data.entities.secondary");
-        em.setPersistenceUnitName("secondaryPU");
-        em.setJtaDataSource(secondaryDataSource());
-
-        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-        em.setJpaVendorAdapter(vendorAdapter);
-
-        Properties jpaProperties = new Properties();
-        jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-        jpaProperties.put("hibernate.hbm2ddl.auto", "update");
-        jpaProperties.put("hibernate.transaction.jta.platform",
-                "org.hibernate.engine.transaction.jta.platform.internal.JBossAppServerJtaPlatform");
-        jpaProperties.put("javax.persistence.transactionType", "JTA");
-        jpaProperties.put("hibernate.transaction.coordinator_class", "jta");
-
-        em.setJpaProperties(jpaProperties);
-
-        return em;
+    private Map<String, Object> jpaProperties() {
+        Map<String, Object> props = new HashMap<>();
+        props.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+        props.put("hibernate.hbm2ddl.auto", "update");
+        props.put("hibernate.show_sql", true);
+        props.put("hibernate.format_sql", true);
+        return props;
     }
 }

@@ -1,10 +1,12 @@
 package com.blpsteam.blpslab1.controllers.util;
 
+import com.atomikos.datasource.pool.CreateConnectionException;
 import com.blpsteam.blpslab1.exceptions.*;
 import jakarta.persistence.PersistenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -74,4 +76,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("An unexpected database error occurred.");
     }
+
+    @ExceptionHandler({CreateConnectionException.class, CannotCreateTransactionException.class})
+    public ResponseEntity<String> handleConnectionIssue(Exception ex) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body("Database error. Try again later.");
+    }
+
 }
