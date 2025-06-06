@@ -6,5 +6,6 @@ public interface CartService {
     Cart getCart();
     void clearCart();
     Cart createCart();
-    void clearCartAfterPayment();
+//    void clearCartAfterPayment();
+    void clearCartAfterPayment(Long userId);
 }

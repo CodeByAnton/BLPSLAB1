@@ -3,6 +3,8 @@ package com.blpsteam.blpslab1.jca;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.net.URI;
@@ -11,17 +13,17 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.UUID;
 @Slf4j
+@Service
 public class YookassaConnectionImpl implements YookassaConnection{
-    private final String shopId;
-    private final String apiKey;
+    @Value("${yookassa.shopId}")
+    private String shopId;
 
-    public YookassaConnectionImpl(String shopId, String apiKey) {
-        this.shopId = shopId;
-        this.apiKey = apiKey;
-    }
+    @Value("${yookassa.apiKey}")
+    private String apiKey;
+
 
     @Override
-    public String createPayment(Long amount) {
+    public String createPayment(Long amount, Long orderId) {
         try {
             var json = """
                 {
@@ -33,10 +35,13 @@ public class YookassaConnectionImpl implements YookassaConnection{
                     "type": "redirect",
                     "return_url": "%s"
                   },
+                  "metadata": {
+                    "order_id":"%s"
+                  },
                   "capture": true,
                   "description": "%s"
                 }
-                """.formatted(amount.toString(), "https://se.ifmo.ru/", "Test");
+                """.formatted(amount.toString(), "https://se.ifmo.ru/",orderId.toString(), "Test");
             log.info("Created Payment {}", json);
             log.info(json);
 
@@ -57,10 +62,9 @@ public class YookassaConnectionImpl implements YookassaConnection{
 
             var client = HttpClient.newHttpClient();
             var response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            log.info("create payment");
-            log.info(String.valueOf(response.statusCode()));
-            log.info("Responsy body");
-            log.info(response.body());
+            if (response.statusCode()>=300){
+                throw new RuntimeException("Error creating payment");
+            }
 
             String body = response.body();
 
@@ -75,7 +79,7 @@ public class YookassaConnectionImpl implements YookassaConnection{
     }
 
     private String encodeBasicAuth(String shopId, String apiKey) {
-        var creds = shopId + ":" + apiKey;
-        return java.util.Base64.getEncoder().encodeToString(creds.getBytes());
+        var credentials = shopId + ":" + apiKey;
+        return java.util.Base64.getEncoder().encodeToString(credentials.getBytes());
     }
 }

@@ -31,7 +31,7 @@ public class YookassaManagedConnectionFactory implements ManagedConnectionFactor
     @Override
     public ManagedConnection createManagedConnection(Subject subject, ConnectionRequestInfo cxRequestInfo) throws ResourceException {
         return new ManagedConnection() {
-            private final YookassaConnection connection = new YookassaConnectionImpl(shopId, apiKey);
+            private final YookassaConnection connection = new YookassaConnectionImpl();
 
             @Override
             public Object getConnection(Subject subject, ConnectionRequestInfo cxRequestInfo) {

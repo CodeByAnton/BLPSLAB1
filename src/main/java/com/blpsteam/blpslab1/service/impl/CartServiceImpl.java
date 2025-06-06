@@ -79,18 +79,35 @@ public class CartServiceImpl implements CartService {
         return cartRepository.save(cart);
     }
 
+//    @Override
+//    @Transactional
+//    public void clearCartAfterPayment() {
+//        log.info("ClearCartAfterPayment method");
+//        Long userId = userService.getUserIdFromContext();
+//
+//        if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.UNPAID)){
+//            throw new IllegalArgumentException("You can't clear cart while you have unpaid order");
+//        };
+//
+//        Cart cart = cartRepository.findByUserId(userId).orElseThrow(() -> new CartAbsenceException("Cart for user with id= " + userId + " not found"));
+//
+//        System.out.println(cart.getItems());
+//        cart.getItems().clear();
+//        cart.setTotalPrice(0L);
+//        cartRepository.save(cart);
+//        log.info("Cart has been cleared after payment for user {}", userId);
+//    }
+
     @Override
     @Transactional
-    public void clearCartAfterPayment() {
+    public void clearCartAfterPayment(Long userId) {
         log.info("ClearCartAfterPayment method");
-        Long userId = userService.getUserIdFromContext();
-
         if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.UNPAID)){
             throw new IllegalArgumentException("You can't clear cart while you have unpaid order");
         };
 
         Cart cart = cartRepository.findByUserId(userId).orElseThrow(() -> new CartAbsenceException("Cart for user with id= " + userId + " not found"));
-        
+
         System.out.println(cart.getItems());
         cart.getItems().clear();
         cart.setTotalPrice(0L);

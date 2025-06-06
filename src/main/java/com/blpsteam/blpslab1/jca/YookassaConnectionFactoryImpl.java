@@ -11,7 +11,7 @@ public class YookassaConnectionFactoryImpl implements YookassaConnectionFactory,
     public YookassaConnectionFactoryImpl(ManagedConnectionFactory mcf) {
         if (mcf instanceof YookassaManagedConnectionFactory) {
             YookassaManagedConnectionFactory factory = (YookassaManagedConnectionFactory) mcf;
-            this.connection = new YookassaConnectionImpl(factory.getShopId(), factory.getApiKey());
+            this.connection = new YookassaConnectionImpl();
         } else {
             throw new IllegalArgumentException("Expected YookassaManagedConnectionFactory");
         }

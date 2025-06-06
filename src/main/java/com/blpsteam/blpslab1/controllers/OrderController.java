@@ -1,6 +1,6 @@
 package com.blpsteam.blpslab1.controllers;
 
-import com.blpsteam.blpslab1.data.entities.core.Order;
+
 import com.blpsteam.blpslab1.dto.OrderResponseDTO;
 import com.blpsteam.blpslab1.service.OrderService;
 import org.springframework.http.HttpStatus;
@@ -20,16 +20,16 @@ public class OrderController {
     @PreAuthorize("hasRole('BUYER')")
     @PostMapping
     public ResponseEntity<OrderResponseDTO> createOrder() {
-        Order order = orderService.createOrder();
-        return ResponseEntity.status(HttpStatus.CREATED).body(new OrderResponseDTO(order.getTotalPrice()));
+        String paymentLink = orderService.createOrder();
+        return ResponseEntity.status(HttpStatus.CREATED).body(new OrderResponseDTO(paymentLink));
     }
 
-    @PreAuthorize("hasRole('BUYER')")
-    @PostMapping("/payment")
-    public ResponseEntity<String> payOrder() {
-
-
-        return new ResponseEntity<>(orderService.payOrder(), HttpStatus.OK);
-
-    }
+//    @PreAuthorize("hasRole('BUYER')")
+//    @PostMapping("/payment")
+//    public ResponseEntity<String> payOrder() {
+//
+//
+//        return new ResponseEntity<>(orderService.confirmPayment(), HttpStatus.OK);
+//
+//    }
 }

@@ -14,17 +14,23 @@ import com.blpsteam.blpslab1.repositories.core.UserRepository;
 import com.blpsteam.blpslab1.service.CartService;
 import com.blpsteam.blpslab1.service.OrderService;
 import com.blpsteam.blpslab1.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+@Slf4j
 @Service
 public class OrderServiceImpl implements OrderService {
 
-    private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
+
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final CartService cartService;
@@ -44,35 +50,7 @@ public class OrderServiceImpl implements OrderService {
     }
     @Override
     @Transactional
-//    public Order createOrder() {
-//        log.info("CreateOrder method");
-//        Long userId=userService.getUserIdFromContext();
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new UserAbsenceException("User not found"));
-//
-//        if (orderRepository.existsByUserIdAndStatus(user.getId(), OrderStatus.UNPAID)) {
-//            throw new OrderPaymentException("User already has an unpaid order");
-//        }
-//
-//        Cart cart = cartService.getCart();
-//
-//        if (cart.getItems().isEmpty()) {
-//            throw new CartItemAbsenceException("Cart is empty");
-//        }
-//
-//        Order order = new Order();
-//        order.setUser(user);
-//        order.setTotalPrice(cart.getTotalPrice());
-//        order.setStatus(OrderStatus.UNPAID); // Изначально статус "не оплачено"
-//        order.setCreatedAt(LocalDateTime.now());
-//
-//        orderRepository.save(order);
-//        log.info("Order created by user {}", user.getId());
-//        schedulePaymentReminder(order);
-//        return order;
-//    }
-
-    public Order createOrder() {
+    public String createOrder() {
         log.info("CreateOrder method");
         Long userId = userService.getUserIdFromContext();
         User user = userRepository.findById(userId)
@@ -93,54 +71,50 @@ public class OrderServiceImpl implements OrderService {
         order.setTotalPrice(cart.getTotalPrice());
         order.setStatus(OrderStatus.UNPAID);
         order.setCreatedAt(LocalDateTime.now());
+        order = orderRepository.save(order);
 
-        return orderRepository.save(order);
+        return yookassaConnection.createPayment(order.getTotalPrice(),order.getId());
+
+
     }
 
 
     @Override
     @Transactional
-    public String payOrder() {
-        log.info("PayOrder method");
-        Long userId=userService.getUserIdFromContext();
-        User buyer=userRepository.findById(userId).orElseThrow(() -> new UserAbsenceException("User not found"));
-        Order order = orderRepository.findByUserAndStatus(buyer, OrderStatus.UNPAID)
-                .orElseThrow(() -> new OrderAbsenceException("Order not found"));
-
-        if (order.getStatus() != OrderStatus.UNPAID) {
-            throw new OrderPaymentException("Order already processed or paid");
+    public void confirmPayment(String yooKassaPaymentResponse){
+        log.info("ConfirmPayment");
+        log.info(yooKassaPaymentResponse);
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = null;
+        try {
+            root = mapper.readTree(yooKassaPaymentResponse);
+        } catch (JsonProcessingException e) {
+            log.info(e.getMessage());
+            throw new RuntimeException(e);
         }
-//        User user = order.getUser();
-//        System.out.println(user.getBalance());
-//        System.out.println(order.getTotalPrice());
-//        if (user.getBalance() < order.getTotalPrice()) {
-//            // Выводим сообщение в консоль вместо отправки в поддержку
-//            System.out.println("Payment failed: User " + user.getUsername() + " has insufficient funds for order " + order.getId());
-//            throw new UserBalanceException("Insufficient balance");
-//        }
-        log.info("Before calling yookassa");
-        String link= yookassaConnection.createPayment(order.getTotalPrice());
-        log.info(link);
-//
-//        // Снимаем деньги с баланса пользователя
-//        user.setBalance(user.getBalance() - order.getTotalPrice());
-        order.setStatus(OrderStatus.PAID); // Обновляем статус на "оплачено"
-//
-//        userRepository.save(user);
-        orderRepository.save(order);
-//
-        // Очищаем корзину после успешной оплаты
-        cartService.clearCartAfterPayment();
-//
-        // Выводим сообщение о успешной оплате
-        log.info("Payment successful: Order {} has been payed. Cart cleared", order.getId());
-        return link;
-//        System.out.println("Payment successful: Order " + order.getId() + " paid. Cart cleared.");
+
+        String event = root.path("event").asText();
+        log.info("event = {}", event);
+        String status = root.path("object").path("status").asText();
+        log.info("status = {}", status);
+        String orderIdStr = root.path("object").path("metadata").path("order_id").asText();
+        Long orderId = Long.parseLong(orderIdStr);
+        log.info("order_id = {}", orderId);
+
+        if ("payment.succeeded".equals(event) && "succeeded".equals(status)) {
+            log.info("Payment succeeded");
+            Order order = orderRepository.findById(orderId).orElseThrow(() -> new OrderAbsenceException("Order not found"));
+            order.setStatus(OrderStatus.PAID);
+            orderRepository.save(order);
+            Long userId = order.getUser().getId();
+            cartService.clearCartAfterPayment(userId);
+            log.info("userId = {}", userId);
+        }
     }
 
-
-
-    public void sendPaymentReminder(Order order) {
-        log.info("Sending payment reminder to user {} for order {}", order.getUser().getId(), order.getId());
+    public void sendPaymentReminders(List<Order> orders) {
+        for (Order order : orders) {
+            log.info("Sending payment reminder to user {} for order {}", order.getUser().getId(), order.getId());
+        }
     }
 }
