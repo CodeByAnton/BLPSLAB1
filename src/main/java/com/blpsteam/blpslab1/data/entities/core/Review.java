@@ -1,6 +1,8 @@
 package com.blpsteam.blpslab1.data.entities.core;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.*;
 
 @Entity
@@ -24,6 +26,7 @@ public class Review {
     private Long productId;
 
     @Column(nullable = false)
+    @Min(0)@Max(5)
     private int rating; // от 1 до 5
 
 }
