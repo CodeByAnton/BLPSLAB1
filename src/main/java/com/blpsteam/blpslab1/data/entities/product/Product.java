@@ -37,15 +37,15 @@ public class Product {
     @Column(nullable = false)
     private Boolean approved;
 
-//    @ManyToOne
-//    @JoinColumn(name = "seller_id", nullable = false)
-//    private User seller;
     @Column(nullable = false, name = "seller_id")
     private Long sellerId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "average_rating")
     private Double averageRating = 0.0;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "review_count")
     private Integer reviewCount = 0;
+
+    @Version
+    private Long version;
 }

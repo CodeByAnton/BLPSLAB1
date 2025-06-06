@@ -22,17 +22,10 @@ public class SellerController {
     public SellerController(ProductService productService) {
         this.productService = productService;
     }
-    /**
-     * Принимает имя товара, описание и количество, если дважды подать товар с одинм и тем же описанием и названием
-     * , то его количество увеличится, а нового товара не будет создано, если же такого описания и/или имени нет,
-     * то создается новая запись о товаре в таблице. Все товары по умолчанию имею approved=false и не будут видны
-     * покупателям, пока администратор не сменит их статус на approved=true
-     */
-
     @PreAuthorize("hasRole('SELLER')")
     @PostMapping("/product")
     public ResponseEntity<?> addItem(@RequestBody ProductRequestDTO productRequestDTO) {
-        Product product= productService.addProduct(productRequestDTO.brand(), productRequestDTO.name(), productRequestDTO.description(),productRequestDTO.quantity(),productRequestDTO.price());
+        Product product= productService.addProduct(productRequestDTO.brand(), productRequestDTO.name(), productRequestDTO.description(),productRequestDTO.quantity(),productRequestDTO.price(), 0d, 0);
         return ResponseEntity.status(HttpStatus.CREATED).body(String.format("Item %s added successfully", product.getName()));
     }
 }

@@ -66,7 +66,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public Product addProduct(String brand, String name, String description, int quantity, Long price) {
+    public Product addProduct(String brand, String name, String description, int quantity, Long price, Double averageRating, int reviewsCount) {
         log.info("AddProduct method");
         if (name==null || name.isEmpty()) {
             throw new IllegalArgumentException("Name cannot be null or empty");
@@ -102,6 +102,8 @@ public class ProductServiceImpl implements ProductService {
             product.setPrice(price);
             product.setApproved(false); // По умолчанию товар не одобрен
             product.setSellerId(seller.getId());
+            product.setAverageRating(0d);
+            product.setReviewCount(0);
             log.info("New Product added successfully, but not approved");
             return productRepository.save(product);
         }
@@ -133,8 +135,9 @@ public class ProductServiceImpl implements ProductService {
                 product.getDescription(),
                 product.getQuantity(),
                 product.getPrice(),
-                product.getApproved()
-
+                product.getApproved(),
+                product.getAverageRating(),
+                product.getReviewCount()
         );
     }
 }
