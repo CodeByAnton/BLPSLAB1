@@ -22,6 +22,7 @@ public class SellerController {
     public SellerController(ProductService productService) {
         this.productService = productService;
     }
+
     @PreAuthorize("hasRole('SELLER')")
     @PostMapping("/product")
     public ResponseEntity<?> addItem(@RequestBody ProductRequestDTO productRequestDTO) {
