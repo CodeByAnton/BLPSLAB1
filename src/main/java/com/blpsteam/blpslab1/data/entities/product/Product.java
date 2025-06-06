@@ -42,4 +42,10 @@ public class Product {
 //    private User seller;
     @Column(nullable = false, name = "seller_id")
     private Long sellerId;
+
+    @Column(nullable = false)
+    private Double averageRating = 0.0;
+
+    @Column(nullable = false)
+    private Integer reviewCount = 0;
 }
