@@ -21,19 +21,19 @@ public class OrderReminderScheduler {
     private final OrderRepository orderRepository;
     private final OrderService orderService;
 
-    @Scheduled(fixedRate = 60_000) // каждые 60 секунд
+    @Scheduled(fixedRate = 60_000)
     @Transactional
     public void checkUnpaidOrdersAndSendReminders() {
-        LocalDateTime oneMinuteAgo = LocalDateTime.now().minusMinutes(1);
-
         List<Order> ordersToRemind = orderRepository
-                .findByStatusAndCreatedAtBeforeAndReminderSentFalse(OrderStatus.UNPAID, oneMinuteAgo);
+                .findByStatusAndReminderSentFalse(OrderStatus.UNPAID);
 
-        for (Order order : ordersToRemind) {
-            try {
-                orderService.sendPaymentReminder(order);
+        try {
+            orderService.sendPaymentReminders(ordersToRemind);
+            for (Order order : ordersToRemind) {
                 order.setReminderSent(true);
-            } catch (Exception e) {
+            }
+        } catch (Exception e) {
+            for (Order order : ordersToRemind) {
                 log.warn("Failed to send reminder for order {}: {}", order.getId(), e.getMessage());
             }
         }
