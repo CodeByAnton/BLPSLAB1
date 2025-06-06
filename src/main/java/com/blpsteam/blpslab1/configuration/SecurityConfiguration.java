@@ -51,6 +51,8 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/v1/seller/**").hasRole("SELLER")
                         // Buyer-only endpoints
                         .requestMatchers("/api/v1/buyer/**").hasRole("BUYER")
+                        // ws
+                        .requestMatchers("/ws/**").permitAll()
                         // Any authenticated user
                         .anyRequest().authenticated()
                 )

@@ -17,7 +17,7 @@ services:
     volumes:
       - db1_data:/var/lib/postgresql/data
     networks:
-      - wildfly-network
+      - blpslab-network
 
   db2:
     image: postgres:15
@@ -27,7 +27,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5433:5432"  # перенаправляем порт 5433 хоста на 5432 контейнера
+      - "5433:5432"
     command:
       - "postgres"
       - "-c"
@@ -35,12 +35,28 @@ services:
     volumes:
       - db2_data:/var/lib/postgresql/data
     networks:
-      - wildfly-network
+      - blpslab-network
+
+  rabbitmq:
+    image: rabbitmq:3.11-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "61613:61613"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    command: >
+      sh -c "rabbitmq-plugins enable --offline rabbitmq_stomp rabbitmq_management &&
+             rabbitmq-server"
+    networks:
+      - blpslab-network
 
 volumes:
   db1_data:
   db2_data:
 
 networks:
-  wildfly-network:
+  blpslab-network:
     driver: bridge

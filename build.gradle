@@ -53,6 +53,17 @@ dependencies {
 	//JCA
 	implementation 'jakarta.resource:jakarta.resource-api:2.1.0'
 
+	// Добавляем WebSocket поддержку
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+	// Spring Messaging (для SimpMessagingTemplate)
+	implementation 'org.springframework:spring-messaging'
+
+	// Spring AMQP для интеграции с RabbitMQ
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+	implementation 'io.projectreactor.netty:reactor-netty:1.1.8'
+
+
 	// Тестирование
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
