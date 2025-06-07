@@ -2,86 +2,72 @@ package com.blpsteam.blpslab1.jca;
 
 import jakarta.resource.ResourceException;
 import jakarta.resource.spi.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.security.auth.Subject;
 import javax.transaction.xa.XAResource;
 import java.io.PrintWriter;
+import java.util.Set;
 
+@Getter
+@Setter
 @ConnectionDefinition(
         connectionFactory = YookassaConnectionFactory.class,
         connectionFactoryImpl = YookassaConnectionFactoryImpl.class,
         connection = YookassaConnection.class,
         connectionImpl = YookassaConnectionImpl.class
 )
-public class YookassaManagedConnectionFactory implements ManagedConnectionFactory {
+public class YookassaManagedConnectionFactory implements ManagedConnectionFactory, ResourceAdapterAssociation {
 
     private String shopId;
     private String apiKey;
+    private ResourceAdapter ra;
+
+
 
     @Override
     public Object createConnectionFactory(ConnectionManager cxManager) throws ResourceException {
-        return new com.blpsteam.blpslab1.jca.YookassaConnectionFactoryImpl(this);
+        return new YookassaConnectionFactoryImpl(this, cxManager);
     }
 
     @Override
     public Object createConnectionFactory() throws ResourceException {
-        return new com.blpsteam.blpslab1.jca.YookassaConnectionFactoryImpl(this);
+        return new YookassaConnectionImpl();
     }
 
     @Override
-    public ManagedConnection createManagedConnection(Subject subject, ConnectionRequestInfo cxRequestInfo) throws ResourceException {
-        return new ManagedConnection() {
-            private final YookassaConnection connection = new YookassaConnectionImpl();
-
-            @Override
-            public Object getConnection(Subject subject, ConnectionRequestInfo cxRequestInfo) {
-                return connection;
-            }
-
-            @Override public void destroy() {}
-            @Override public void cleanup() {}
-            @Override public void associateConnection(Object connection) {}
-
-            @Override
-            public void addConnectionEventListener(ConnectionEventListener connectionEventListener) {
-
-            }
-
-            @Override
-            public void removeConnectionEventListener(ConnectionEventListener connectionEventListener) {
-
-            }
-
-            //            @Override public void addConnectionEventListener(javax.resource.spi.ConnectionEventListener listener) {}
-//            @Override public void removeConnectionEventListener(javax.resource.spi.ConnectionEventListener listener) {}
-            @Override public XAResource getXAResource() { return null; }
-
-            @Override
-            public LocalTransaction getLocalTransaction() throws ResourceException {
-                return null;
-            }
-
-            @Override
-            public ManagedConnectionMetaData getMetaData() throws ResourceException {
-                return null;
-            }
-
-            @Override public java.io.PrintWriter getLogWriter() { return null; }
-            @Override public void setLogWriter(PrintWriter out) {}
-        };
+    public ManagedConnection createManagedConnection(Subject subject, ConnectionRequestInfo cxReqInfo) throws ResourceException {
+        return new YookassaManagedConnection(
+        );
     }
 
     @Override
-    public ManagedConnection matchManagedConnections(java.util.Set set, Subject subject, ConnectionRequestInfo info) {
+    public ManagedConnection matchManagedConnections(Set connections, Subject subject, ConnectionRequestInfo cxReqInfo) throws ResourceException {
+        for (Object mc : connections) {
+            if (mc instanceof YookassaManagedConnection) {
+                return (ManagedConnection) mc;
+            }
+        }
         return null;
     }
 
-    // Getters/Setters for ra.xml
-    public String getShopId() { return shopId; }
-    public void setShopId(String shopId) { this.shopId = shopId; }
-    public String getApiKey() { return apiKey; }
-    public void setApiKey(String apiKey) { this.apiKey = apiKey; }
+    @Override public void setLogWriter(PrintWriter out) throws ResourceException {
+    }
+    @Override public PrintWriter getLogWriter() throws ResourceException {
+        return null;
+    }
 
-    @Override public PrintWriter getLogWriter() { return null; }
-    @Override public void setLogWriter(PrintWriter out) {}
+    @Override
+    public ResourceAdapter getResourceAdapter() {
+        return this.ra;
+    }
+
+    @Override public void setResourceAdapter(ResourceAdapter ra) throws ResourceException {
+        if (this.ra != null && !(ra instanceof YookassaResourceAdapter)) {
+            throw new ResourceException("Invalid resource adapter provided");
+        }
+        this.ra = (YookassaResourceAdapter) ra;
+    }
+
 }

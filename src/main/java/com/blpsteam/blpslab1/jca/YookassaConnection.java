@@ -1,8 +1,10 @@
 package com.blpsteam.blpslab1.jca;
 
-import java.math.BigDecimal;
+import jakarta.resource.cci.Connection;
 
-public interface YookassaConnection {
+
+
+public interface YookassaConnection extends Connection {
     String createPayment(Long amount, Long orderId);
 
 }

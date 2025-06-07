@@ -1,24 +1,29 @@
 package com.blpsteam.blpslab1.jca;
 
+import jakarta.resource.ResourceException;
+import jakarta.resource.spi.ConnectionManager;
 import jakarta.resource.spi.ManagedConnectionFactory;
 
 import java.io.Serializable;
 
-public class YookassaConnectionFactoryImpl implements YookassaConnectionFactory, Serializable {
+public class YookassaConnectionFactoryImpl implements YookassaConnectionFactory {
 
-    private final YookassaConnection connection;
+    private final YookassaManagedConnectionFactory mcf;
+    private final ConnectionManager cm;
 
-    public YookassaConnectionFactoryImpl(ManagedConnectionFactory mcf) {
-        if (mcf instanceof YookassaManagedConnectionFactory) {
-            YookassaManagedConnectionFactory factory = (YookassaManagedConnectionFactory) mcf;
-            this.connection = new YookassaConnectionImpl();
-        } else {
-            throw new IllegalArgumentException("Expected YookassaManagedConnectionFactory");
-        }
+    public YookassaConnectionFactoryImpl(YookassaManagedConnectionFactory mcf,ConnectionManager cm) {
+        this.mcf = mcf;
+        this.cm = cm;
     }
 
+
     @Override
-    public YookassaConnection getConnection() {
-        return connection;
+    public YookassaConnection getConnection() throws ResourceException {
+        if (cm != null) {
+            return (YookassaConnection) cm.allocateConnection(mcf, null);
+        } else {
+            var mc = (YookassaManagedConnection) mcf.createManagedConnection(null, null);
+            return (YookassaConnection) mc.getConnection(null, null);
+        }
     }
 }

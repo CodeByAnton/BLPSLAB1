@@ -2,6 +2,11 @@ package com.blpsteam.blpslab1.jca;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.resource.ResourceException;
+import jakarta.resource.cci.ConnectionMetaData;
+import jakarta.resource.cci.Interaction;
+import jakarta.resource.cci.LocalTransaction;
+import jakarta.resource.cci.ResultSetInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -81,5 +86,30 @@ public class YookassaConnectionImpl implements YookassaConnection{
     private String encodeBasicAuth(String shopId, String apiKey) {
         var credentials = shopId + ":" + apiKey;
         return java.util.Base64.getEncoder().encodeToString(credentials.getBytes());
+    }
+
+    @Override
+    public Interaction createInteraction() throws ResourceException {
+        return null;
+    }
+
+    @Override
+    public LocalTransaction getLocalTransaction() throws ResourceException {
+        return null;
+    }
+
+    @Override
+    public ConnectionMetaData getMetaData() throws ResourceException {
+        return null;
+    }
+
+    @Override
+    public ResultSetInfo getResultSetInfo() throws ResourceException {
+        return null;
+    }
+
+    @Override
+    public void close() throws ResourceException {
+
     }
 }
