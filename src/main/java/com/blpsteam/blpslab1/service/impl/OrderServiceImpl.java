@@ -115,6 +115,7 @@ public class OrderServiceImpl implements OrderService {
     public void sendPaymentReminders(List<Order> orders) {
         for (Order order : orders) {
             log.info("Sending payment reminder to user {} for order {}", order.getUser().getId(), order.getId());
+            System.out.println("PAAAAAAAAAAAAAAAAAAAAAAAAY");
         }
     }
 }
