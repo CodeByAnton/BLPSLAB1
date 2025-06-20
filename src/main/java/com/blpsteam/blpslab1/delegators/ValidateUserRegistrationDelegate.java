@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Component("validateUserRegistrationDelegate")
 @RequiredArgsConstructor
 @Slf4j
-public class validateUserRegistrationDelegate implements JavaDelegate {
+public class ValidateUserRegistrationDelegate implements JavaDelegate {
     private final UserService userService;
 
     @Override

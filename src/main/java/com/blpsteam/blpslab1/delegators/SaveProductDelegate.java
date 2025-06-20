@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component("saveProductDelegate")
-public class saveProductDelegate implements JavaDelegate {
+public class SaveProductDelegate implements JavaDelegate {
     private final ProductService productService;
     private final UserRepository userRepository;
 

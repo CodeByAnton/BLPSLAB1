@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component("sellerAuthDelegate")
-public class sellerAuthDelegate implements JavaDelegate {
+public class SellerAuthDelegate implements JavaDelegate {
     private final UserService userService;
     private final UserRepository userRepository;
     @Override
