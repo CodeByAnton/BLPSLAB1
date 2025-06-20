@@ -8,9 +8,9 @@ import org.springframework.data.domain.Pageable;
 
 public interface CartItemService {
     CartItemResponseDTO getCartItemById(Long id);
-    Page<CartItemResponseDTO> getAllCartItems(Pageable pageable);
-    CartItemResponseDTO createCartItem(CartItemRequestDTO cartItemRequestDTO);
-    CartItemResponseDTO updateCartItem(Long id, CartItemQuantityRequestDTO cartItemRequestDTO);
-    void deleteCartItemById(Long id);
+    Page<CartItemResponseDTO> getAllCartItems(Pageable pageable, String username);
+    CartItemResponseDTO createCartItem(CartItemRequestDTO cartItemRequestDTO, String username);
+    CartItemResponseDTO updateCartItem(Long id, CartItemQuantityRequestDTO cartItemRequestDTO, String username);
+    void deleteCartItemById(Long id, String username);
     void clearCartAndUpdateProductQuantities(Long cartId);
 }

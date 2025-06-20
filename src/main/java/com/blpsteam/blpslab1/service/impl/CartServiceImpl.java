@@ -36,8 +36,10 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Cart getCart() {
-        Long userId = userService.getUserIdFromContext();
+    public Cart getCart(String username) {
+        Long userId = userRepository.findByUsername(username)
+                .map(User::getId)
+                .orElseThrow(() -> new UserAbsenceException("Такого пользователя не существует"));
         Cart cart = cartRepository.findByUserId(userId).orElseThrow(() -> new CartAbsenceException("Корзина для пользователя с id " + userId + " не найдена"));
         Long total = cart.getTotalPrice();
         cart.setTotalPrice(total);
@@ -46,9 +48,11 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public void clearCart() {
+    public void clearCart(String username) {
         log.info("ClearCart method");
-        Long userId = userService.getUserIdFromContext();
+        Long userId = userRepository.findByUsername(username)
+                .map(User::getId)
+                .orElseThrow(() -> new UserAbsenceException("Такого пользователя не существует"));
 
         if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.UNPAID)){
             throw new IllegalArgumentException("You can't clear cart while you have unpaid order");
@@ -65,9 +69,11 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public Cart createCart() {
+    public Cart createCart(String username) {
         log.info("CreateCart method");
-        Long userId = userService.getUserIdFromContext();
+        Long userId = userRepository.findByUsername(username)
+                .map(User::getId)
+                .orElseThrow(() -> new UserAbsenceException("Такого пользователя не существует"));
         if (cartRepository.findByUserId(userId).isPresent()) {
             throw new CartAbsenceException("You already have a cart");
         }
@@ -100,7 +106,10 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public void clearCartAfterPayment(Long userId) {
+    public void clearCartAfterPayment(String username) {
+        Long userId = userRepository.findByUsername(username)
+                .map(User::getId)
+                .orElseThrow(() -> new UserAbsenceException("Такого пользователя не существует"));
         log.info("ClearCartAfterPayment method");
         if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.UNPAID)){
             throw new IllegalArgumentException("You can't clear cart while you have unpaid order");

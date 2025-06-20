@@ -50,9 +50,11 @@ public class OrderServiceImpl implements OrderService {
     }
     @Override
     @Transactional
-    public String createOrder() {
+    public String createOrder(String username) {
         log.info("CreateOrder method");
-        Long userId = userService.getUserIdFromContext();
+        Long userId = userRepository.findByUsername(username)
+                .map(User::getId)
+                .orElseThrow(() -> new UserAbsenceException("Такого пользователя не существует"));
         User user = userRepository.findById(userId)
                 .orElseThrow(()->new UserAbsenceException("User not found"));
 
@@ -60,7 +62,7 @@ public class OrderServiceImpl implements OrderService {
             throw new OrderPaymentException("User already has an unpaid order");
         }
 
-        Cart cart = cartService.getCart();
+        Cart cart = cartService.getCart(username);
 
         if (cart.getItems().isEmpty()) {
             throw new CartItemAbsenceException("Cart is empty");
@@ -106,9 +108,10 @@ public class OrderServiceImpl implements OrderService {
             Order order = orderRepository.findById(orderId).orElseThrow(() -> new OrderAbsenceException("Order not found"));
             order.setStatus(OrderStatus.PAID);
             orderRepository.save(order);
-            Long userId = order.getUser().getId();
-            cartService.clearCartAfterPayment(userId);
-            log.info("userId = {}", userId);
+            //Long userId = order.getUser().getId();
+            String username = order.getUser().getUsername();
+            cartService.clearCartAfterPayment(username);
+            log.info("userName = {}", username);
         }
     }
 

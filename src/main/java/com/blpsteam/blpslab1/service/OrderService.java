@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 
 public interface OrderService {
-    String createOrder();
+    String createOrder(String username);
     void confirmPayment(String yooKassaPaymentResponse);
     void sendPaymentReminders(List<Order> orders);
 }

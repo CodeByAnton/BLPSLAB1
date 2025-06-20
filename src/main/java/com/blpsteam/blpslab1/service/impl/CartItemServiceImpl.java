@@ -59,8 +59,11 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    public Page<CartItemResponseDTO> getAllCartItems(Pageable pageable) {
-        Long userId = userService.getUserIdFromContext();
+    public Page<CartItemResponseDTO> getAllCartItems(Pageable pageable, String username) {
+//        Long userId = userService.getUserIdFromContext();
+        Long userId = userRepository.findByUsername(username)
+                .map(User::getId)
+                .orElseThrow(() -> new UserAbsenceException("Такого пользователя не существует"));
 
         Cart cart = cartRepository.findByUserId(userId).orElseThrow(() ->
                 new CartAbsenceException("Users (id = " + userId + ") doesn't have a cart"));
@@ -73,17 +76,21 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     @Transactional
-    public CartItemResponseDTO createCartItem(CartItemRequestDTO cartItemRequestDTO) {
+    public CartItemResponseDTO createCartItem(CartItemRequestDTO cartItemRequestDTO, String username) {
         log.info("CreateCartItem method called");
         if (cartItemRequestDTO.quantity()<=0){
             throw new IllegalArgumentException("Change product quantity, because quantity should be greater than 0");
         }
 
-        Cart cart = cartRepository.findByUserId(userService.getUserIdFromContext())
+        Long ownerId = userRepository.findByUsername(username)
+                .map(User::getId)
+                .orElseThrow(() -> new UserAbsenceException("Такого пользователя не существует"));
+
+        Cart cart = cartRepository.findByUserId(ownerId)
                 .orElseGet(() -> {
                     Cart newCart = new Cart();
-                    User user = userRepository.findById(userService.getUserIdFromContext())
-                            .orElseThrow(() -> new UserAbsenceException("There is no user with id " + userService.getUserIdFromContext()));
+                    User user = userRepository.findById(ownerId)
+                            .orElseThrow(() -> new UserAbsenceException("There is no user with id " + ownerId));
                     newCart.setUser(user);
                     System.out.println("Create cart because not exist");
                     return cartRepository.save(newCart);
@@ -124,9 +131,11 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     @Transactional
-    public CartItemResponseDTO updateCartItem(Long id, CartItemQuantityRequestDTO cartItemRequestDTO) {
+    public CartItemResponseDTO updateCartItem(Long id, CartItemQuantityRequestDTO cartItemRequestDTO, String username) {
         log.info("UpdateCartItem method called");
-        Long userId=userService.getUserIdFromContext();
+        Long userId = userRepository.findByUsername(username)
+                .map(User::getId)
+                .orElseThrow(() -> new UserAbsenceException("Такого пользователя не существует"));
         if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.UNPAID)){
             throw new IllegalArgumentException("You can't edit cart while you have unpaid order");
         }
@@ -162,18 +171,20 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     @Transactional
-    public void deleteCartItemById(Long id) {
+    public void deleteCartItemById(Long id, String username) {
         log.info("DeleteCartItemById method called");
         CartItem cartItem = cartItemRepository.findById(id)
                 .orElseThrow(() -> new CartItemAbsenceException("CartItem doesn't exist"));
 
-        Long userId=userService.getUserIdFromContext();
+        Long userId = userRepository.findByUsername(username)
+                .map(User::getId)
+                .orElseThrow(() -> new UserAbsenceException("Такого пользователя не существует"));
         if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.UNPAID)){
             throw new IllegalArgumentException("You can't edit cart while you have unpaid order");
         }
 
         Cart cart = cartItem.getCart();
-        if (!cart.getUser().getId().equals(userService.getUserIdFromContext())){
+        if (!cart.getUser().getId().equals(userId)){
             throw new IllegalArgumentException("You can't remove item not from your cart");
         }
         cart.removeItem(cartItem);

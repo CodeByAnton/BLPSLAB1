@@ -107,6 +107,15 @@ public class UserService {
         throw new UserAbsenceException("Такого пользователя не существует");
     }
 
+    public String getUserNameFromContext() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal instanceof UserDetails userDetails) {
+            return userDetails.getUsername();
+        }
+        throw new UserAbsenceException("Такого пользователя не существует");
+    }
+
     public Role getUserRoleFromContext() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
