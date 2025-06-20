@@ -66,7 +66,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public Product addProduct(String brand, String name, String description, int quantity, Long price, Double averageRating, int reviewsCount) {
+    public Product addProduct(String brand, String name, String description, int quantity, Long price, Double averageRating, int reviewsCount, String username) {
         log.info("AddProduct method");
         if (name==null || name.isEmpty()) {
             throw new IllegalArgumentException("Name cannot be null or empty");
@@ -81,8 +81,9 @@ public class ProductServiceImpl implements ProductService {
             throw new IllegalArgumentException("Price cannot be negative");
         }
 
-        Long userId=userService.getUserIdFromContext();
-        User seller=userRepository.findById(userId).orElseThrow(() -> new UserAbsenceException("User not found"));
+        User seller=userRepository.findByUsername(username).orElseThrow(()-> new UserAbsenceException("User not found"));
+        Long userId=seller.getId();
+//        User seller=userRepository.findById(userId).orElseThrow(() -> new UserAbsenceException("User not found"));
 
         // Ищем существующий товар с таким же названием и описанием у данного продавца
         Optional<Product> existingProduct = productRepository.findByBrandAndNameAndDescriptionAndSellerId(brand,name,description, seller.getId());

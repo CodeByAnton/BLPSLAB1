@@ -89,6 +89,12 @@ public class UserService {
                 .orElse(false);
     }
 
+    public Optional<User> checkCredentialsAndGetUser(String username, String password) {
+        return findByUsername(username)
+                .filter(user -> passwordEncoder.matches(password, user.getPassword()));
+    }
+
+
     public Long getUserIdFromContext() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 

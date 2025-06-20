@@ -23,10 +23,10 @@ public class SellerController {
         this.productService = productService;
     }
 
-    @PreAuthorize("hasRole('SELLER')")
-    @PostMapping("/product")
-    public ResponseEntity<?> addItem(@RequestBody ProductRequestDTO productRequestDTO) {
-        Product product= productService.addProduct(productRequestDTO.brand(), productRequestDTO.name(), productRequestDTO.description(),productRequestDTO.quantity(),productRequestDTO.price(), 0d, 0);
-        return ResponseEntity.status(HttpStatus.CREATED).body(String.format("Item %s added successfully", product.getName()));
-    }
+//    @PreAuthorize("hasRole('SELLER')")
+//    @PostMapping("/product")
+//    public ResponseEntity<?> addItem(@RequestBody ProductRequestDTO productRequestDTO) {
+//        Product product= productService.addProduct(productRequestDTO.brand(), productRequestDTO.name(), productRequestDTO.description(),productRequestDTO.quantity(),productRequestDTO.price(), 0d, 0);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(String.format("Item %s added successfully", product.getName()));
+//    }
 }
