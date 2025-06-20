@@ -22,16 +22,16 @@
             <camunda:validation />
           </camunda:formField>
           <camunda:formField id="role" label="role" type="enum">
-            <camunda:value id="admin" name="admin" />
-            <camunda:value id="seller" name="seller" />
-            <camunda:value id="buyer" name="buyer" />
+            <camunda:value id="ADMIN" name="ADMIN" />
+            <camunda:value id="SELLER" name="SELLER" />
+            <camunda:value id="BUYER" name="BUYER" />
           </camunda:formField>
         </camunda:formData>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0kvcdsd</bpmn:incoming>
       <bpmn:outgoing>Flow_0sfspsl</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:serviceTask id="Activity_0d9fl6q" name="Валидация" camunda:delegateExpression="${validateUserRegistrationDelegatevalidateUserRegistrationDelegate}">
+    <bpmn:serviceTask id="Activity_0d9fl6q" name="Валидация" camunda:delegateExpression="${validateUserRegistrationDelegate}">
       <bpmn:incoming>Flow_0sfspsl</bpmn:incoming>
       <bpmn:outgoing>Flow_0qnpsgf</bpmn:outgoing>
     </bpmn:serviceTask>
