@@ -1,7 +1,7 @@
 package com.blpsteam.blpslab1.controllers;
 
 
-import com.blpsteam.blpslab1.data.entities.product.Product;
+import com.blpsteam.blpslab1.data.entities.core.Product;
 
 import com.blpsteam.blpslab1.dto.ProductRequestDTO;
 import com.blpsteam.blpslab1.service.ProductService;

@@ -43,9 +43,9 @@ public class DataSourceConfig {
         return createXaDataSource("primaryDS", "public", 5432, "db1");  // база db1
     }
 
-    @Bean(name = "secondaryDataSource")
-    public DataSource secondaryDataSource() {
-        return createXaDataSource("secondaryDS", "public", 5433, "db2"); // база db2
-    }
+//    @Bean(name = "secondaryDataSource")
+//    public DataSource secondaryDataSource() {
+//        return createXaDataSource("secondaryDS", "public", 5433, "db2"); // база db2
+//    }
 
 }

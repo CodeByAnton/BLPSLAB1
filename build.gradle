@@ -68,6 +68,10 @@ dependencies {
 	// Тестирование
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+
+
+	implementation 'org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:7.20.0'
+	implementation 'org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-webapp:7.20.0'
 }
 
 tasks.named('test') {

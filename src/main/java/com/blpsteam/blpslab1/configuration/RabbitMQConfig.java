@@ -17,13 +17,13 @@ public class RabbitMQConfig {
 
     @Bean
     public TopicExchange stompTopicExchange() {
-        return new TopicExchange("amq.topic"); // Используем стандартный exchange
+        return new TopicExchange("amq.topic");
     }
 
     @Bean
     public Binding stompReviewsBinding() {
         return BindingBuilder.bind(stompReviewsQueue())
                 .to(stompTopicExchange())
-                .with("queue.reviews"); // routing key должен совпадать с STOMP destination
+                .with("queue.reviews");
     }
 }

@@ -4,11 +4,9 @@ import com.blpsteam.blpslab1.dto.ReviewRequestDTO;
 import com.blpsteam.blpslab1.exceptions.ReviewDataException;
 import com.blpsteam.blpslab1.exceptions.impl.ReviewAbsenceException;
 import com.blpsteam.blpslab1.repositories.core.ReviewRepository;
-import com.blpsteam.blpslab1.repositories.core.UserRepository;
-import com.blpsteam.blpslab1.repositories.product.ProductRepository;
+import com.blpsteam.blpslab1.repositories.core.ProductRepository;
 import com.blpsteam.blpslab1.service.ReviewService;
 import com.blpsteam.blpslab1.service.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 

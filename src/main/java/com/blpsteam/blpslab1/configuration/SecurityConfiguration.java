@@ -55,7 +55,8 @@ public class SecurityConfiguration {
                         // ws
                         .requestMatchers("/ws/**").permitAll()
                         // Any authenticated user
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
+
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .userDetailsService(userDetailsService)

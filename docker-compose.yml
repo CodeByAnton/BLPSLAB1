@@ -19,23 +19,23 @@ services:
     networks:
       - blpslab-network
 
-  db2:
-    image: postgres:15
-    container_name: db2
-    environment:
-      POSTGRES_DB: db2
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5433:5432"
-    command:
-      - "postgres"
-      - "-c"
-      - "max_prepared_transactions=100"
-    volumes:
-      - db2_data:/var/lib/postgresql/data
-    networks:
-      - blpslab-network
+#  db2:
+#    image: postgres:15
+#    container_name: db2
+#    environment:
+#      POSTGRES_DB: db2
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: postgres
+#    ports:
+#      - "5433:5432"
+#    command:
+#      - "postgres"
+#      - "-c"
+#      - "max_prepared_transactions=100"
+#    volumes:
+#      - db2_data:/var/lib/postgresql/data
+#    networks:
+#      - blpslab-network
 
   rabbitmq:
     image: rabbitmq:3.11-management
