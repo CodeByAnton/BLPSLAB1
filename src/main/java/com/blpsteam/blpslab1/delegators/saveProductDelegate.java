@@ -21,8 +21,11 @@ public class saveProductDelegate implements JavaDelegate {
         String productName = (String) execution.getVariable("name");
         String productBrand = (String) execution.getVariable("brand");
         String productDescription = (String) execution.getVariable("description");
-        Integer productQuantity = Integer.valueOf((String) execution.getVariable("quantity"));
-        Long productPrice = (Long) execution.getVariable("price");
+        int productQuantity = Integer.parseInt((String) execution.getVariable("quantity"));
+        Long productPrice = Long.valueOf((String) execution.getVariable("price"));
+
+
+
 
         try {
             productService.addProduct(productBrand, productName, productDescription, productQuantity, productPrice, 0d, 0, username);
