@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0sam9ak" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.36.1" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.23.0">
   <bpmn:collaboration id="Collaboration_0x41rda">
-    <bpmn:participant id="Participant_1cvgaax" name="User Registration" processRef="Process_1ep0tuk" />
+    <bpmn:participant id="Participant_1cvgaax" name="User Registration" processRef="user_registration_process" />
   </bpmn:collaboration>
-  <bpmn:process id="Process_1ep0tuk" name="User Registration" isExecutable="true" camunda:historyTimeToLive="P30D">
+  <bpmn:process id="user_registration_process" name="User Registration" isExecutable="true" camunda:historyTimeToLive="P30D">
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>Flow_0qhauai</bpmn:outgoing>
     </bpmn:startEvent>
@@ -31,7 +31,7 @@
       <bpmn:incoming>Flow_0kvcdsd</bpmn:incoming>
       <bpmn:outgoing>Flow_0sfspsl</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:serviceTask id="Activity_0d9fl6q" name="Валидация" camunda:delegateExpression="${validateUserRegistrationDelegate}">
+    <bpmn:serviceTask id="Activity_0d9fl6q" name="Валидация" camunda:delegateExpression="${validateUserRegistrationDelegatevalidateUserRegistrationDelegate}">
       <bpmn:incoming>Flow_0sfspsl</bpmn:incoming>
       <bpmn:outgoing>Flow_0qnpsgf</bpmn:outgoing>
     </bpmn:serviceTask>
