@@ -75,7 +75,7 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    @Transactional
+//    @Transactional
     public CartItemResponseDTO createCartItem(CartItemRequestDTO cartItemRequestDTO, String username) {
         log.info("CreateCartItem method called");
         if (cartItemRequestDTO.quantity()<=0){
